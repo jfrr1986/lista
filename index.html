@@ -497,7 +497,7 @@ function saveConfig() {
 // Los modelos (~6MB) se descargan una vez y quedan en el
 // dispositivo. Las siguientes veces cargan sin internet.
 // ═══════════════════════════════════════════════════════════════
-const MODEL_URL = 'https://raw.githubusercontent.com/jfrr1986/lista/main/model';
+const MODEL_URL = 'https://jfrr1986.github.io/lista/model';
 
 // Archivos de modelo necesarios
 const MODEL_FILES = [
@@ -641,7 +641,7 @@ async function loadModels() {
       const originalFetch = window.fetch.bind(window);
       window.fetch = async (url, opts) => {
         const urlStr = url ? url.toString() : '';
-        if(urlStr.includes('vladmandic') || urlStr.includes('face-api') || urlStr.includes('raw.githubusercontent.com/jfrr1986')) {
+        if(urlStr.includes('vladmandic') || urlStr.includes('face-api') || urlStr.includes('jfrr1986.github.io/lista/model')) {
           return adapter.fetchFromCacheOrNetwork(urlStr);
         }
         return originalFetch(url, opts);
