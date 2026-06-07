@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lista con Reconocimiento Facial</title>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#22263a;
+  --card:#1e2235;--border:#2e3450;
+  --accent:#4f8ef7;--accent2:#7c5cbf;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --text:#e8eaf6;--text2:#8b93b5;--text3:#555e82;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+h1{font-size:17px;font-weight:600}
+h2{font-size:14px;font-weight:600;color:var(--text2)}
+p{line-height:1.6}
+
+/* Header */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px}
+.header-info{flex:1}
+.header-sub{font-size:11px;color:var(--text2);margin-top:1px}
+
+/* Tabs */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:80px;padding:11px 8px;text-align:center;font-size:11px;color:var(--text2);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab span{display:block;font-size:18px;margin-bottom:2px}
+
+/* Sections */
+.section{display:none;padding:14px 14px}
+.section.active{display:block}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* Cámara */
+.cam-wrap{position:relative;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:12px}
+#video{width:100%;height:100%;object-fit:cover;display:block}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.cam-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.6)}
+.cam-overlay.hidden{display:none}
+.cam-overlay svg{opacity:.4}
+.cam-btn-group{display:flex;gap:8px;margin-bottom:10px}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--radius-sm);border:none;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;width:100%}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-sm{padding:7px 12px;font-size:12px;width:auto}
+.btn-amber{background:var(--amber);color:#000}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Status badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-blue{background:rgba(79,142,247,.15);color:var(--accent)}
+
+/* Personas */
+.persona-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border)}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.avatar-init{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.persona-info{flex:1;min-width:0}
+.persona-name{font-size:13px;font-weight:600;color:var(--text)}
+.persona-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.persona-actions{display:flex;gap:6px}
+
+/* Resultado reconocimiento */
+.recono-result{background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:12px;border:1px solid var(--border);text-align:center}
+.recono-name{font-size:22px;font-weight:700;color:var(--text);margin:8px 0 4px}
+.recono-conf{font-size:13px;color:var(--text2)}
+
+/* Lista asistencia */
+.asist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:6px;border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.asist-item.presente{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.05)}
+.asist-item.ausente{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+.asist-name{flex:1;font-size:13px;font-weight:500}
+.asist-faltas{font-size:11px;color:var(--text3)}
+
+/* Alerta */
+.alert{border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;font-size:12px;border:1px solid}
+.alert-warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.alert-danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--red)}
+.alert-info{background:rgba(79,142,247,.1);border-color:rgba(79,142,247,.3);color:var(--accent)}
+.alert-title{font-weight:700;margin-bottom:4px}
+
+/* Progreso fotos */
+.foto-progress{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}
+.foto-dot{width:28px;height:28px;border-radius:6px;overflow:hidden;background:var(--bg3);border:1px solid var(--border)}
+.foto-dot img{width:100%;height:100%;object-fit:cover}
+.foto-dot.empty{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:10px}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.modal-bg.hidden{display:none}
+.modal{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 30px;width:100%;max-width:480px;border-top:1px solid var(--border)}
+.modal h2{margin-bottom:14px}
+.input{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;margin-bottom:10px}
+.input:focus{outline:none;border-color:var(--accent)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:30px;font-size:13px;z-index:200;transition:transform .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Spinner */
+.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.stat-num{font-size:28px;font-weight:700}
+.stat-label{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* Loading modelos */
+#modelStatus{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;font-size:12px;color:var(--text2);text-align:center}
+</style>
+</head>
+<body>
+
+<div id="modelStatus">⏳ Cargando modelos de IA...</div>
+
+<div class="header">
+  <div class="logo">🎓</div>
+  <div class="header-info">
+    <h1>Lista con Reconocimiento Facial</h1>
+    <div class="header-sub" id="fechaHdr"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('reconocer')"><span>🎯</span>Reconocer</button>
+  <button class="tab" onclick="switchTab('personas')"><span>👥</span>Personas</button>
+  <button class="tab" onclick="switchTab('lista')"><span>📋</span>Lista</button>
+  <button class="tab" onclick="switchTab('alertas')"><span>🔔</span>Alertas</button>
+</div>
+
+<!-- RECONOCER -->
+<div id="sec-reconocer" class="section active">
+  <div class="card">
+    <div class="card-title">📸 Cámara en vivo</div>
+    <div class="cam-wrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="cam-overlay" id="camOverlay">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span style="color:rgba(255,255,255,.6);font-size:12px">Toca para activar</span>
+      </div>
+    </div>
+    <div class="cam-btn-group">
+      <button class="btn btn-primary" id="btnCam" onclick="toggleCam()">▶ Activar cámara</button>
+      <button class="btn btn-outline btn-sm" onclick="flipCam()" id="btnFlip" style="width:auto;min-width:44px">🔄</button>
+    </div>
+  </div>
+
+  <div id="reconResult" class="recono-result" style="display:none">
+    <div id="reconIcon" style="font-size:36px">🤔</div>
+    <div class="recono-name" id="reconName">—</div>
+    <div class="recono-conf" id="reconConf"></div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="btn btn-success btn-sm" onclick="marcarPresente()" id="btnPresente" disabled>✓ Marcar presente</button>
+      <button class="btn btn-danger btn-sm" onclick="ignorarDeteccion()" id="btnIgnorar">✗ Ignorar</button>
+    </div>
+  </div>
+
+  <div id="sinPersonas" class="alert alert-info" style="display:none">
+    <div class="alert-title">ℹ️ Sin personas registradas</div>
+    Ve a la pestaña <strong>Personas</strong> para registrar y entrenar el modelo.
+  </div>
+
+  <div id="modelInfo" class="alert alert-info" style="display:none">
+    <div class="alert-title">⏳ Modelos cargando...</div>
+    Espera unos segundos mientras se cargan los modelos de IA.
+  </div>
+</div>
+
+<!-- PERSONAS -->
+<div id="sec-personas" class="section">
+  <button class="btn btn-primary" onclick="abrirModalPersona()" style="margin-bottom:14px">
+    ＋ Agregar persona
+  </button>
+
+  <div id="listaPersonas"></div>
+
+  <div id="sinPersonasMsg" style="text-align:center;padding:30px 0;color:var(--text2);display:none">
+    <div style="font-size:40px;margin-bottom:10px">👤</div>
+    <div style="font-size:14px">No hay personas registradas</div>
+    <div style="font-size:12px;margin-top:4px">Toca "Agregar persona" para comenzar</div>
+  </div>
+</div>
+
+<!-- LISTA -->
+<div id="sec-lista" class="section">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stP" style="color:var(--green)">0</div><div class="stat-label">Presentes</div></div>
+    <div class="stat-card"><div class="stat-num" id="stA" style="color:var(--red)">0</div><div class="stat-label">Ausentes</div></div>
+  </div>
+  <div id="listaAsistencia"></div>
+  <button class="btn btn-outline" style="margin-top:8px;font-size:12px" onclick="exportarCSV()">⬇ Exportar CSV</button>
+</div>
+
+<!-- ALERTAS -->
+<div id="sec-alertas" class="section">
+  <div id="alertasContainer"></div>
+</div>
+
+<!-- Modal agregar persona -->
+<div class="modal-bg hidden" id="modalPersona">
+  <div class="modal">
+    <h2>👤 Nueva persona</h2>
+    <input class="input" id="inputNombre" placeholder="Nombre completo" />
+    <input class="input" id="inputRol" placeholder="Rol (Estudiante, Familiar, etc.)" />
+    <button class="btn btn-primary" onclick="guardarPersona()">Guardar y capturar fotos</button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="cerrarModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal captura fotos -->
+<div class="modal-bg hidden" id="modalFotos">
+  <div class="modal">
+    <h2>📷 Capturar fotos de <span id="captNombre"></span></h2>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Necesitas mínimo 5 fotos desde distintos ángulos. Más fotos = mejor reconocimiento.</p>
+    <div class="cam-wrap" style="height:200px">
+      <video id="video2" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+      <canvas id="canvas2" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+    </div>
+    <div class="foto-progress" id="fotoProgress"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-amber" onclick="capturarFoto()" id="btnCapturar">📸 Capturar foto</button>
+      <button class="btn btn-outline btn-sm" style="width:auto" onclick="flipCam2()">🔄</button>
+    </div>
+    <div id="entrenaStatus" style="font-size:12px;color:var(--text2);margin:8px 0;min-height:18px"></div>
+    <button class="btn btn-success" onclick="entrenarYCerrar()" id="btnEntrenar" disabled>✅ Entrenar modelo</button>
+    <button class="btn btn-danger" style="margin-top:8px;font-size:12px" onclick="cerrarModalFotos()">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── ESTADO ───────────────────────────────────────────────────────────────
+const DB_KEY = 'rfApp_v2';
+let appData = {personas:[], asistencia:{}, histFaltas:{}};
+let modelsLoaded = false;
+let labeledDescriptors = [];
+let faceMatcher = null;
+let camStream = null;
+let camStream2 = null;
+let facing = 'user';
+let facing2 = 'user';
+let detectLoop = null;
+let currentPersonaCapture = null;
+let fotosCapturadas = [];
+let todayKey = new Date().toISOString().slice(0,10);
+let lastDetected = null;
+
+// ─── PERSISTENCIA ─────────────────────────────────────────────────────────
+function save() {
+  const exportable = {
+    personas: appData.personas.map(p=>({...p, descriptors: p.descriptors})),
+    asistencia: appData.asistencia,
+    histFaltas: appData.histFaltas
+  };
+  localStorage.setItem(DB_KEY, JSON.stringify(exportable));
+}
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DB_KEY)||'{}');
+    if(d.personas) appData.personas = d.personas;
+    if(d.asistencia) appData.asistencia = d.asistencia;
+    if(d.histFaltas) appData.histFaltas = d.histFaltas;
+  } catch(e){}
+}
+
+// ─── MODELOS FACE-API ──────────────────────────────────────────────────────
+const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model';
+
+async function loadModels() {
+  try {
+    document.getElementById('modelStatus').textContent = '⏳ Cargando modelos de IA (primera vez puede tardar ~20s)...';
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+    ]);
+    modelsLoaded = true;
+    document.getElementById('modelStatus').textContent = '✅ Modelos de IA listos';
+    setTimeout(()=>{ document.getElementById('modelStatus').style.display='none'; },2000);
+    await reconstruirMatcher();
+  } catch(e) {
+    document.getElementById('modelStatus').textContent = '❌ Error cargando modelos. Verifica conexión a internet.';
+    console.error(e);
+  }
+}
+
+async function reconstruirMatcher() {
+  const personasConFotos = appData.personas.filter(p=>p.descriptors&&p.descriptors.length>0);
+  if(!personasConFotos.length) { faceMatcher=null; return; }
+  labeledDescriptors = personasConFotos.map(p => {
+    const floatArrays = p.descriptors.map(d => new Float32Array(Object.values(d)));
+    return new faceapi.LabeledFaceDescriptors(p.nombre, floatArrays);
+  });
+  faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.5);
+}
+
+// ─── CÁMARA PRINCIPAL ──────────────────────────────────────────────────────
+async function toggleCam() {
+  const btn = document.getElementById('btnCam');
+  if(camStream) {
+    camStream.getTracks().forEach(t=>t.stop());
+    camStream = null;
+    clearInterval(detectLoop);
+    detectLoop = null;
+    document.getElementById('video').srcObject = null;
+    document.getElementById('camOverlay').classList.remove('hidden');
+    btn.textContent = '▶ Activar cámara';
+    document.getElementById('reconResult').style.display='none';
+    return;
+  }
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}}});
+    const vid = document.getElementById('video');
+    vid.srcObject = camStream;
+    document.getElementById('camOverlay').classList.add('hidden');
+    btn.textContent = '⏹ Detener cámara';
+    vid.onloadedmetadata = () => {
+      const c = document.getElementById('canvas');
+      c.width = vid.videoWidth; c.height = vid.videoHeight;
+      iniciarDeteccion();
+    };
+  } catch(e){ toast('No se pudo acceder a la cámara'); }
+}
+
+async function flipCam() {
+  facing = facing==='user'?'environment':'user';
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  clearInterval(detectLoop);
+  await toggleCam();
+}
+
+function iniciarDeteccion() {
+  if(detectLoop) clearInterval(detectLoop);
+  detectLoop = setInterval(detectarRostro, 800);
+}
+
+async function detectarRostro() {
+  if(!modelsLoaded) return;
+  const vid = document.getElementById('video');
+  if(!vid.srcObject || vid.paused || vid.ended) return;
+  const opts = new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.5});
+  const detection = await faceapi.detectSingleFace(vid, opts)
+    .withFaceLandmarks(true)
+    .withFaceDescriptor();
+
+  const c = document.getElementById('canvas');
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+
+  const resDiv = document.getElementById('reconResult');
+
+  if(!detection) {
+    resDiv.style.display='none';
+    lastDetected = null;
+    return;
+  }
+
+  // Dibujar bounding box
+  const box = detection.detection.box;
+  const scaleX = c.width / vid.videoWidth;
+  const scaleY = c.height / vid.videoHeight;
+  ctx.strokeStyle = '#4f8ef7';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(box.x*scaleX, box.y*scaleY, box.width*scaleX, box.height*scaleY);
+
+  if(!faceMatcher) {
+    document.getElementById('sinPersonas').style.display='block';
+    resDiv.style.display='none';
+    return;
+  }
+  document.getElementById('sinPersonas').style.display='none';
+
+  const result = faceMatcher.findBestMatch(detection.descriptor);
+  resDiv.style.display='block';
+
+  if(result.label === 'unknown') {
+    document.getElementById('reconIcon').textContent='❓';
+    document.getElementById('reconName').textContent='Persona desconocida';
+    document.getElementById('reconConf').textContent='No registrada en el sistema';
+    document.getElementById('btnPresente').disabled=true;
+    ctx.strokeStyle = '#ef4444';
+    ctx.strokeRect(box.x*scaleX, box.y*scaleY, box.width*scaleX, box.height*scaleY);
+    lastDetected = null;
+  } else {
+    const conf = Math.round((1-result.distance)*100);
+    const persona = appData.personas.find(p=>p.nombre===result.label);
+    document.getElementById('reconIcon').textContent = conf>80?'✅':'🔍';
+    document.getElementById('reconName').textContent = result.label;
+    document.getElementById('reconConf').textContent = `Confianza: ${conf}% | ${persona?persona.rol:''}`;
+    document.getElementById('btnPresente').disabled = conf < 55;
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(box.x*scaleX, box.y*scaleY, box.width*scaleX, box.height*scaleY);
+    ctx.fillStyle='rgba(34,197,94,0.8)';
+    ctx.fillRect(box.x*scaleX, box.y*scaleY-20, box.width*scaleX, 20);
+    ctx.fillStyle='#fff'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(result.label+' ('+conf+'%)', (box.x+box.width/2)*scaleX, box.y*scaleY-6);
+    lastDetected = result.label;
+  }
+}
+
+function marcarPresente() {
+  if(!lastDetected) return;
+  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
+  appData.asistencia[todayKey][lastDetected]='P';
+  save();
+  toast('✅ '+lastDetected+' marcado como presente');
+  renderLista();
+}
+
+function ignorarDeteccion() {
+  document.getElementById('reconResult').style.display='none';
+  lastDetected=null;
+}
+
+// ─── PERSONAS ──────────────────────────────────────────────────────────────
+function renderPersonas() {
+  const c = document.getElementById('listaPersonas');
+  const msg = document.getElementById('sinPersonasMsg');
+  if(!appData.personas.length){ c.innerHTML=''; msg.style.display='block'; return; }
+  msg.style.display='none';
+  c.innerHTML = appData.personas.map((p,i)=>{
+    const nFotos = (p.descriptors||[]).length;
+    const entrenado = nFotos>=3;
+    return `<div class="persona-item">
+      <div class="avatar-init">${p.nombre.slice(0,2).toUpperCase()}</div>
+      <div class="persona-info">
+        <div class="persona-name">${p.nombre}</div>
+        <div class="persona-sub">${p.rol} · ${nFotos} foto${nFotos!==1?'s':''} · <span style="color:${entrenado?'var(--green)':'var(--amber)'}">${entrenado?'✓ Listo':'⚠ Faltan fotos'}</span></div>
+      </div>
+      <div class="persona-actions">
+        <button class="btn btn-outline btn-sm" onclick="agregarMasFotos(${i})" title="Añadir fotos">📸</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarPersona(${i})" title="Eliminar">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalPersona() {
+  document.getElementById('inputNombre').value='';
+  document.getElementById('inputRol').value='Estudiante';
+  document.getElementById('modalPersona').classList.remove('hidden');
+}
+
+function cerrarModal() {
+  document.getElementById('modalPersona').classList.add('hidden');
+}
+
+function guardarPersona() {
+  const nombre = document.getElementById('inputNombre').value.trim();
+  const rol = document.getElementById('inputRol').value.trim()||'Estudiante';
+  if(!nombre){ toast('Escribe un nombre'); return; }
+  if(appData.personas.find(p=>p.nombre===nombre)){ toast('Ya existe esa persona'); return; }
+  appData.personas.push({nombre, rol, descriptors:[]});
+  save();
+  cerrarModal();
+  const idx = appData.personas.length-1;
+  renderPersonas();
+  setTimeout(()=>abrirCaptura(idx),200);
+}
+
+function eliminarPersona(i) {
+  if(!confirm('¿Eliminar a '+appData.personas[i].nombre+'?')) return;
+  appData.personas.splice(i,1);
+  save();
+  reconstruirMatcher();
+  renderPersonas();
+  toast('Persona eliminada');
+}
+
+function agregarMasFotos(i) { abrirCaptura(i); }
+
+// ─── CAPTURA DE FOTOS ──────────────────────────────────────────────────────
+async function abrirCaptura(idx) {
+  currentPersonaCapture = idx;
+  fotosCapturadas = [...(appData.personas[idx].descriptors||[])];
+  document.getElementById('captNombre').textContent = appData.personas[idx].nombre;
+  document.getElementById('modalFotos').classList.remove('hidden');
+  actualizarProgressFotos();
+  document.getElementById('entrenaStatus').textContent='';
+  document.getElementById('btnEntrenar').disabled = fotosCapturadas.length < 3;
+  try {
+    camStream2 = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2}});
+    document.getElementById('video2').srcObject = camStream2;
+  } catch(e){ toast('No se pudo acceder a la cámara'); }
+}
+
+function cerrarModalFotos() {
+  if(camStream2){ camStream2.getTracks().forEach(t=>t.stop()); camStream2=null; }
+  document.getElementById('video2').srcObject=null;
+  document.getElementById('modalFotos').classList.add('hidden');
+}
+
+async function flipCam2() {
+  facing2 = facing2==='user'?'environment':'user';
+  if(camStream2){ camStream2.getTracks().forEach(t=>t.stop()); }
+  camStream2 = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2}});
+  document.getElementById('video2').srcObject = camStream2;
+}
+
+async function capturarFoto() {
+  if(!modelsLoaded){ toast('Modelos aún cargando...'); return; }
+  const vid = document.getElementById('video2');
+  const btn = document.getElementById('btnCapturar');
+  btn.disabled=true;
+  btn.textContent='⏳ Procesando...';
+  const opts = new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.4});
+  const detection = await faceapi.detectSingleFace(vid,opts).withFaceLandmarks(true).withFaceDescriptor();
+  if(!detection){
+    toast('No se detectó rostro — ajusta posición e iluminación');
+    btn.disabled=false; btn.textContent='📸 Capturar foto';
+    return;
+  }
+  // Guardar descriptor como objeto serializable
+  const desc = Object.assign({}, detection.descriptor);
+  fotosCapturadas.push(desc);
+  actualizarProgressFotos();
+  document.getElementById('btnEntrenar').disabled = fotosCapturadas.length < 3;
+  document.getElementById('entrenaStatus').textContent = `✅ Foto ${fotosCapturadas.length} capturada. ${fotosCapturadas.length<5?'Captura más ángulos para mejor precisión.':'¡Excelente cantidad de fotos!'}`;
+  btn.disabled=false; btn.textContent='📸 Capturar foto';
+}
+
+function actualizarProgressFotos() {
+  const c = document.getElementById('fotoProgress');
+  const total = Math.max(fotosCapturadas.length, 8);
+  c.innerHTML = Array.from({length:total}, (_,i)=>
+    i<fotosCapturadas.length
+      ? `<div class="foto-dot"><div style="width:100%;height:100%;background:var(--green);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">✓</div></div>`
+      : `<div class="foto-dot empty">${i+1}</div>`
+  ).join('');
+}
+
+async function entrenarYCerrar() {
+  if(fotosCapturadas.length<3){ toast('Necesitas al menos 3 fotos'); return; }
+  document.getElementById('entrenaStatus').textContent='⚙️ Entrenando modelo...';
+  document.getElementById('btnEntrenar').disabled=true;
+  appData.personas[currentPersonaCapture].descriptors = fotosCapturadas;
+  save();
+  await reconstruirMatcher();
+  document.getElementById('entrenaStatus').textContent='✅ Modelo entrenado correctamente';
+  setTimeout(()=>{
+    cerrarModalFotos();
+    renderPersonas();
+    toast('✅ '+appData.personas[currentPersonaCapture].nombre+' entrenado con '+fotosCapturadas.length+' fotos');
+  },1000);
+}
+
+// ─── LISTA ASISTENCIA ──────────────────────────────────────────────────────
+function renderLista() {
+  const hoy = appData.asistencia[todayKey]||{};
+  const presentes = Object.values(hoy).filter(v=>v==='P').length;
+  const ausentes = appData.personas.length - presentes;
+  document.getElementById('stP').textContent=presentes;
+  document.getElementById('stA').textContent=ausentes;
+
+  const c = document.getElementById('listaAsistencia');
+  if(!appData.personas.length){ c.innerHTML='<p style="color:var(--text2);font-size:13px;text-align:center;padding:20px 0">Sin personas registradas</p>'; return; }
+  c.innerHTML = appData.personas.map(p=>{
+    const est = hoy[p.nombre]||'A';
+    const f = (appData.histFaltas[p.nombre]||[]).length;
+    return `<div class="asist-item ${est==='P'?'presente':'ausente'}" onclick="toggleAsist('${p.nombre}')">
+      <div class="avatar-init" style="width:36px;height:36px;font-size:12px">${p.nombre.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="asist-name">${p.nombre}</div>
+        <div class="asist-faltas">${p.rol}${f?' · '+f+' falta'+(f>1?'s':''):''}${f>=3?' ⚠️':''}</div>
+      </div>
+      <span class="badge ${est==='P'?'badge-green':'badge-red'}">${est==='P'?'✓ Presente':'✗ Ausente'}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleAsist(nombre) {
+  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
+  const actual = appData.asistencia[todayKey][nombre]||'A';
+  const nuevo = actual==='P'?'A':'P';
+  appData.asistencia[todayKey][nombre]=nuevo;
+  // actualizar historial faltas
+  if(!appData.histFaltas[nombre]) appData.histFaltas[nombre]=[];
+  if(nuevo==='A'){
+    if(!appData.histFaltas[nombre].includes(todayKey)) appData.histFaltas[nombre].push(todayKey);
+  } else {
+    appData.histFaltas[nombre]=appData.histFaltas[nombre].filter(d=>d!==todayKey);
+  }
+  save(); renderLista(); renderAlertas();
+}
+
+function exportarCSV() {
+  const hoy = appData.asistencia[todayKey]||{};
+  const lineas=['Nombre,Rol,Estado hoy,Faltas acumuladas'];
+  appData.personas.forEach(p=>{
+    const est=(hoy[p.nombre]||'A')==='P'?'Presente':'Ausente';
+    const f=(appData.histFaltas[p.nombre]||[]).length;
+    lineas.push(`${p.nombre},${p.rol},${est},${f}`);
+  });
+  const blob=new Blob([lineas.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`asistencia_${todayKey}.csv`; a.click();
+}
+
+// ─── ALERTAS ───────────────────────────────────────────────────────────────
+function renderAlertas() {
+  const c = document.getElementById('alertasContainer');
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  let html=''; let hay=false;
+  appData.personas.forEach(p=>{
+    const fs=(appData.histFaltas[p.nombre]||[]);
+    const recientes=fs.filter(d=>(hoy-new Date(d))/86400000<=7);
+    const total=fs.length;
+    if(recientes.length>=3){
+      hay=true;
+      html+=`<div class="alert alert-danger">
+        <div class="alert-title">🚨 ${p.nombre} — Alerta coordinación</div>
+        <div>${recientes.length} faltas en últimos 7 días · ${total} total acumuladas</div>
+        <button onclick="enviarWA('${p.nombre}',${recientes.length},'coordinacion')" style="margin-top:8px;padding:6px 12px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer">📲 WhatsApp Coordinación</button>
+      </div>`;
+    } else if(recientes.length===2){
+      hay=true;
+      html+=`<div class="alert alert-warn">
+        <div class="alert-title">⚠️ ${p.nombre} — Seguimiento</div>
+        <div>2 faltas recientes · ${total} total. Una más activa alerta a coordinación.</div>
+        <button onclick="enviarWA('${p.nombre}',${recientes.length},'acudiente')" style="margin-top:8px;padding:6px 12px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer">📲 WhatsApp Acudiente</button>
+      </div>`;
+    }
+  });
+  if(!hay) html=`<div class="alert alert-info"><div class="alert-title">✅ Sin alertas activas</div>Ninguna persona supera el umbral de 3 faltas en 7 días.</div>`;
+  c.innerHTML=html;
+}
+
+function enviarWA(nombre,faltas,dest){
+  let msg = dest==='coordinacion'
+    ? `*⚠️ Alerta de Inasistencia — Coordinación*\n\nEstudiante: *${nombre}*\nFaltas últimos 7 días: *${faltas}*\nFecha: ${todayKey}\n\nSolicito revisión del caso por ausencias reiteradas sin justificación. Por favor contactar al acudiente.`
+    : `Cordial saludo. Le informo que el estudiante *${nombre}* presenta *${faltas} faltas* en los últimos días. Le solicito comunicarse con el docente para justificar las ausencias. Gracias.`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ─── UI HELPERS ────────────────────────────────────────────────────────────
+function switchTab(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  const idx={reconocer:0,personas:1,lista:2,alertas:3}[id];
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  if(id==='personas') renderPersonas();
+  if(id==='lista') renderLista();
+  if(id==='alertas') renderAlertas();
+}
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+const fechas = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const ahora = new Date();
+document.getElementById('fechaHdr').textContent =
+  fechas[ahora.getDay()]+' '+ahora.getDate()+' de '+meses[ahora.getMonth()]+' de '+ahora.getFullYear();
+
+load();
+loadModels();
+</script>
+</body>
+</html>
