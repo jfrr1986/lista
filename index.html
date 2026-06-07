@@ -126,7 +126,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 /* Puntualidad */
 .badge-tiempo{background:rgba(34,197,94,.15);color:var(--green)}
 .badge-tarde{background:rgba(245,158,11,.15);color:var(--amber)}
-/* Toma de lista automática */
+/* Sesión automática */
 .auto-session-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .auto-session-bar.active{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.06)}
 .auto-session-dot{width:10px;height:10px;border-radius:50%;background:var(--text3);flex-shrink:0}
@@ -135,7 +135,6 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .auto-session-info{flex:1;min-width:0}
 .auto-session-title{font-size:12px;font-weight:600}
 .auto-session-sub{font-size:10px;color:var(--text2);margin-top:2px}
-/* Sonido feedback visual */
 @keyframes flashGreen{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 16px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 @keyframes flashRed{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}70%{box-shadow:0 0 0 16px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
 .pulse-ok{animation:flashGreen .6s ease}
@@ -180,12 +179,11 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 
   <!-- RECONOCER -->
   <div id="sec-reconocer" class="section active">
-    <!-- Barra de sesión automática -->
     <div class="auto-session-bar" id="autoSessionBar">
       <div class="auto-session-dot" id="autoSessionDot"></div>
       <div class="auto-session-info">
         <div class="auto-session-title" id="autoSessionTitle">Toma de lista manual</div>
-        <div class="auto-session-sub" id="autoSessionSub">Activa la sesión automática para marcar asistencia al reconocer</div>
+        <div class="auto-session-sub" id="autoSessionSub">Activa la sesión para marcar presentes automáticamente al reconocer</div>
       </div>
       <button class="btn btn-outline btn-sm" id="btnAutoSession" onclick="toggleSesionAuto()" style="width:auto;font-size:11px;padding:6px 10px">▶ Iniciar sesión</button>
     </div>
@@ -250,7 +248,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
     <div id="listaAsistencia"></div>
     <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
       <button class="btn btn-outline" style="font-size:12px;flex:1" onclick="exportarCSV()">⬇ Exportar CSV del día</button>
-      <button class="btn btn-danger" style="font-size:12px;flex:1" id="btnCerrarToma" onclick="cerrarTomaLista()">🔒 Cerrar toma de lista</button>
+      <button class="btn btn-danger" style="font-size:12px;flex:1" onclick="cerrarTomaLista()">🔒 Cerrar toma de lista</button>
     </div>
   </div>
 
@@ -267,12 +265,6 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
       <input class="input" id="cfgColegio" placeholder="Institución Educativa..." onchange="saveConfig()">
       <label class="label">Docente responsable</label>
       <input class="input" id="cfgDocente" placeholder="Nombre del docente" onchange="saveConfig()">
-    </div>
-    <div class="card">
-      <div class="card-title">⏰ Puntualidad</div>
-      <label class="label">Hora límite para "A tiempo" (hh:mm)</label>
-      <input class="input" id="cfgHoraLimite" type="time" value="07:00" onchange="saveConfig()" style="width:160px">
-      <div style="font-size:11px;color:var(--text2);margin-top:-4px;margin-bottom:4px">Llegadas antes de esta hora = 🟢 A tiempo · Después = 🟡 Tarde</div>
     </div>
     <div class="card">
       <div class="card-title">🧠 Modelos de IA</div>
@@ -302,7 +294,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
     <div class="card">
       <div class="card-title">ℹ️ Versión</div>
       <div style="font-size:12px;color:var(--text2);line-height:1.8">
-        Lista Facial v4.0<br>
+        Lista Facial v3.0<br>
         Modelos: @vladmandic/face-api 1.7.14<br>
         Caché modelos: IndexedDB (navegador)<br>
         Datos personas: localStorage (navegador)
@@ -403,7 +395,7 @@ const IDB_VERSION = 1;
 const IDB_STORE = 'models';
 
 let appData = {personas:[], asistencia:{}, histFaltas:{}};
-let cfg = {colegio:'Institución Educativa Taparto', docente:'Jhon', horaLimite:'07:00'};
+let cfg = {colegio:'Institución Educativa Taparto', docente:'Jhon'};
 let modelsLoaded = false;
 let faceMatcher = null;
 let camStream = null, camStream2 = null;
@@ -417,54 +409,30 @@ let filtroLista = 'todos';
 let modelesDesdeCache = false;
 const todayKey = new Date().toISOString().slice(0,10);
 
-// Sesión automática de asistencia
+// ── Sesión automática ──────────────────────────────────────
 let sesionAutoActiva = false;
-let marcadosEnSesion = new Set(); // ya marcados en esta sesión
-let cooldownMap = {}; // nombre → timestamp último marcado
-const COOLDOWN_MS = 8000; // 8s entre reconocimientos del mismo rostro
+let cooldownMap = {};
+const COOLDOWN_MS = 8000;
 
-// ══ AUDIO ENGINE (Web Audio API — sin archivos externos) ══
+// ── Audio Engine (Web Audio API) ───────────────────────────
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
-function getAudioCtx(){
-  if(!audioCtx) audioCtx = new AudioCtx();
-  return audioCtx;
+function getAudioCtx(){ if(!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+function playTone(freq, dur, type='sine', vol=0.35, ramp=null){
+  try{
+    const ctx=getAudioCtx(), osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type=type;
+    if(ramp){ osc.frequency.setValueAtTime(ramp,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(freq,ctx.currentTime+dur*.8); }
+    else osc.frequency.setValueAtTime(freq,ctx.currentTime);
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+dur);
+  }catch(e){}
 }
-function playBeep(freq, dur, type='sine', vol=0.4, startFreq=null){
-  try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type;
-    if(startFreq){
-      osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(freq, ctx.currentTime + dur*0.8);
-    } else {
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    }
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + dur);
-  } catch(e){}
-}
-function sonidoExito(){
-  // Acorde ascendente — ding dong exitoso
-  playBeep(523, 0.15, 'sine', 0.35); // Do
-  setTimeout(()=>playBeep(659, 0.15, 'sine', 0.35), 120); // Mi
-  setTimeout(()=>playBeep(784, 0.25, 'sine', 0.4), 240);  // Sol
-}
-function sonidoFallido(){
-  // Tono descendente — error
-  playBeep(350, 0.18, 'sawtooth', 0.3, 500);
-  setTimeout(()=>playBeep(220, 0.28, 'sawtooth', 0.25), 180);
-}
-function sonidoYaMarcado(){
-  // Doble pip corto — ya estaba
-  playBeep(880, 0.07, 'sine', 0.2);
-  setTimeout(()=>playBeep(880, 0.07, 'sine', 0.2), 130);
-}
+function sonidoExito(){ playTone(523,.12); setTimeout(()=>playTone(659,.12),110); setTimeout(()=>playTone(784,.22),220); }
+function sonidoFallido(){ playTone(300,.18,'sawtooth',.28,500); setTimeout(()=>playTone(200,.25,'sawtooth',.22),170); }
+function sonidoYaMarcado(){ playTone(880,.07,'sine',.18); setTimeout(()=>playTone(880,.07,'sine',.18),120); }
 
 function save() {
   try { localStorage.setItem(DB_KEY, JSON.stringify(appData)); } catch(e){ toast('⚠️ Error guardando datos'); }
@@ -480,14 +448,11 @@ function load() {
     const c = JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
     if(c.colegio) cfg.colegio = c.colegio;
     if(c.docente) cfg.docente = c.docente;
-    if(c.horaLimite) cfg.horaLimite = c.horaLimite;
   } catch(e){}
 }
 function saveConfig() {
   cfg.colegio = document.getElementById('cfgColegio').value;
   cfg.docente = document.getElementById('cfgDocente').value;
-  const hl = document.getElementById('cfgHoraLimite');
-  if(hl) cfg.horaLimite = hl.value || '07:00';
   localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
   document.getElementById('fechaHdr').textContent = cfg.colegio + ' · ' + hoy();
 }
@@ -497,7 +462,7 @@ function saveConfig() {
 // Los modelos (~6MB) se descargan una vez y quedan en el
 // dispositivo. Las siguientes veces cargan sin internet.
 // ═══════════════════════════════════════════════════════════════
-const MODEL_URL = 'https://jfrr1986.github.io/lista/model';
+const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model';
 
 // Archivos de modelo necesarios
 const MODEL_FILES = [
@@ -641,7 +606,7 @@ async function loadModels() {
       const originalFetch = window.fetch.bind(window);
       window.fetch = async (url, opts) => {
         const urlStr = url ? url.toString() : '';
-        if(urlStr.includes('vladmandic') || urlStr.includes('face-api') || urlStr.includes('jfrr1986.github.io/lista/model')) {
+        if(urlStr.includes('vladmandic') || urlStr.includes('face-api')) {
           return adapter.fetchFromCacheOrNetwork(urlStr);
         }
         return originalFetch(url, opts);
@@ -754,14 +719,12 @@ async function detectarRostro() {
     document.getElementById('btnPresente').disabled=true;
     ctx.strokeStyle='#ef4444'; ctx.lineWidth=2;
     ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
-    // Sonido fallido solo si sesión activa y no en cooldown
     if(sesionAutoActiva){
-      const now = Date.now();
-      if(!cooldownMap['__unknown__'] || now-cooldownMap['__unknown__']>COOLDOWN_MS){
-        cooldownMap['__unknown__'] = now;
-        sonidoFallido();
-        const cw = document.getElementById('camWrap');
-        if(cw){ cw.classList.add('pulse-fail'); setTimeout(()=>cw.classList.remove('pulse-fail'),700); }
+      const now=Date.now();
+      if(!cooldownMap['__unk__']||(now-cooldownMap['__unk__'])>COOLDOWN_MS){
+        cooldownMap['__unk__']=now; sonidoFallido();
+        const cw=document.getElementById('camWrap');
+        if(cw){cw.classList.add('pulse-fail');setTimeout(()=>cw.classList.remove('pulse-fail'),700);}
       }
     }
     lastDetected=null;
@@ -781,123 +744,102 @@ async function detectarRostro() {
     ctx.fillStyle='#fff'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
     ctx.fillText(match.label+' ('+conf+'%)',(box.x+box.width/2)*sx,(box.y-6)*sy);
     lastDetected=match.label;
-
-    // AUTO-MARCAR si sesión activa, confianza suficiente y fuera de cooldown
-    if(sesionAutoActiva && conf >= 60){
-      const now = Date.now();
-      const yaHoy = (appData.asistencia[todayKey]||{})[match.label]==='P';
-      const enCooldown = cooldownMap[match.label] && (now-cooldownMap[match.label])<COOLDOWN_MS;
-      if(!yaHoy && !enCooldown){
-        cooldownMap[match.label] = now;
-        marcarPresente(true);
-      } else if(yaHoy && !enCooldown){
-        cooldownMap[match.label] = now;
-        sonidoYaMarcado();
+    if(sesionAutoActiva && conf>=60){
+      const now=Date.now();
+      const yaHoy=(appData.asistencia[todayKey]||{})[match.label]==='P';
+      const enCD=cooldownMap[match.label]&&(now-cooldownMap[match.label])<COOLDOWN_MS;
+      if(!enCD){
+        cooldownMap[match.label]=now;
+        if(!yaHoy) marcarPresente(true);
+        else sonidoYaMarcado();
       }
     }
   }
 }
 
-// ── Helpers de puntualidad ──────────────────────────────────
+// ── Helpers hora/puntualidad ───────────────────────────────
+function horaLimite(){ return cfg.horaLimite||'07:00'; }
 function esATiempo(){
-  const [hLim, mLim] = (cfg.horaLimite||'07:00').split(':').map(Number);
-  const ahora = new Date();
-  return ahora.getHours() < hLim || (ahora.getHours() === hLim && ahora.getMinutes() <= mLim);
+  const [h,m]=horaLimite().split(':').map(Number), n=new Date();
+  return n.getHours()<h||(n.getHours()===h&&n.getMinutes()<=m);
 }
-function timestampHora(){
-  const n = new Date();
-  return n.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
-}
-function fechaHoraCompleta(){
-  const n = new Date();
-  return n.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})
-    +' '+n.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+function horaActual(){ return new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
+function fechaHoraActual(){
+  return new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+horaActual();
 }
 
-// ── Sesión automática ────────────────────────────────────────
+// ── Sesión automática ──────────────────────────────────────
 function toggleSesionAuto(){
-  sesionAutoActiva = !sesionAutoActiva;
-  marcadosEnSesion.clear();
-  cooldownMap = {};
-  const bar = document.getElementById('autoSessionBar');
-  const dot = document.getElementById('autoSessionDot');
-  const title = document.getElementById('autoSessionTitle');
-  const sub = document.getElementById('autoSessionSub');
-  const btn = document.getElementById('btnAutoSession');
+  sesionAutoActiva=!sesionAutoActiva;
+  cooldownMap={};
+  const bar=document.getElementById('autoSessionBar');
+  const dot=document.getElementById('autoSessionDot');
+  const title=document.getElementById('autoSessionTitle');
+  const sub=document.getElementById('autoSessionSub');
+  const btn=document.getElementById('btnAutoSession');
   if(sesionAutoActiva){
-    bar.classList.add('active');
-    dot.classList.add('blink');
-    title.textContent = '🟢 Sesión activa — '+timestampHora();
-    sub.textContent = 'Reconocimiento automático · Se marcarán presentes al detectar';
-    btn.textContent = '⏹ Cerrar sesión';
-    btn.style.background = 'var(--red)'; btn.style.color = '#fff'; btn.style.border = 'none';
+    bar.classList.add('active'); dot.classList.add('blink');
+    title.textContent='🟢 Sesión activa — '+horaActual();
+    sub.textContent='Reconocimiento automático activado';
+    btn.textContent='⏹ Cerrar sesión'; btn.style.cssText='width:auto;font-size:11px;padding:6px 10px;background:var(--red);color:#fff;border:none';
     toast('🟢 Sesión automática iniciada');
   } else {
-    // Al cerrar sesión, aplicar ausentes a quien no fue marcado hoy
     aplicarAusentes();
-    bar.classList.remove('active');
-    dot.classList.remove('blink');
-    title.textContent = 'Toma de lista manual';
-    sub.textContent = 'Activa la sesión automática para marcar asistencia al reconocer';
-    btn.textContent = '▶ Iniciar sesión';
-    btn.style.background = ''; btn.style.color = ''; btn.style.border = '';
+    bar.classList.remove('active'); dot.classList.remove('blink');
+    title.textContent='Toma de lista manual';
+    sub.textContent='Activa la sesión para marcar presentes automáticamente al reconocer';
+    btn.textContent='▶ Iniciar sesión'; btn.style.cssText='width:auto;font-size:11px;padding:6px 10px';
     toast('🔒 Sesión cerrada — ausentes aplicados');
   }
 }
 
 function aplicarAusentes(){
   if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
-  let cnt = 0;
+  let cnt=0;
   appData.personas.forEach(p=>{
     if(!appData.asistencia[todayKey][p.nombre]){
-      appData.asistencia[todayKey][p.nombre] = 'A';
+      appData.asistencia[todayKey][p.nombre]='A';
       if(!appData.histFaltas[p.nombre]) appData.histFaltas[p.nombre]=[];
-      if(!appData.histFaltas[p.nombre].includes(todayKey))
-        appData.histFaltas[p.nombre].push(todayKey);
+      if(!appData.histFaltas[p.nombre].includes(todayKey)) appData.histFaltas[p.nombre].push(todayKey);
       cnt++;
     }
   });
   save(); renderLista(); renderAlertas();
-  if(cnt) toast('✗ '+cnt+' ausente'+(cnt>1?'s':'')+' aplicado'+(cnt>1?'s':''));
+  if(cnt) toast('✗ '+cnt+' ausente'+(cnt>1?'s':'')+' registrado'+(cnt>1?'s':''));
+}
+
+function cerrarTomaLista(){
+  const sin=appData.personas.filter(p=>!(appData.asistencia[todayKey]||{})[p.nombre]);
+  const msg=sin.length
+    ?'¿Cerrar toma? Se marcarán '+sin.length+' persona'+(sin.length>1?'s':'')+' como ausente'+(sin.length>1?'s':'')+'.'
+    :'¿Cerrar toma? Todos ya fueron marcados.';
+  if(!confirm(msg)) return;
+  aplicarAusentes();
+  if(sesionAutoActiva) toggleSesionAuto();
+  else toast('🔒 Toma cerrada — ausentes aplicados');
 }
 
 function marcarPresente(auto=false){
   if(!lastDetected) return;
   if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
-
-  // Ya marcado hoy
   if(appData.asistencia[todayKey][lastDetected]==='P'){
-    if(auto){ sonidoYaMarcado(); return; } // silencioso en auto
     sonidoYaMarcado();
-    toast('ℹ️ '+lastDetected+' ya fue marcado presente');
+    if(!auto) toast('ℹ️ '+lastDetected+' ya está presente');
     return;
   }
-
-  const aT = esATiempo();
-  const fh = fechaHoraCompleta();
-  const hora = timestampHora();
-
-  appData.asistencia[todayKey][lastDetected] = 'P';
-  // Guardar metadatos de hora y puntualidad
-  if(!appData.asistencia._meta) appData.asistencia._meta = {};
-  if(!appData.asistencia._meta[todayKey]) appData.asistencia._meta[todayKey] = {};
-  appData.asistencia._meta[todayKey][lastDetected] = { hora, aT, fechaHora: fh };
-
+  const aT=esATiempo(), fh=fechaHoraActual(), hr=horaActual();
+  appData.asistencia[todayKey][lastDetected]='P';
+  if(!appData.asistencia._meta) appData.asistencia._meta={};
+  if(!appData.asistencia._meta[todayKey]) appData.asistencia._meta[todayKey]={};
+  appData.asistencia._meta[todayKey][lastDetected]={hora:hr,aT,fechaHora:fh};
   if(appData.histFaltas[lastDetected])
     appData.histFaltas[lastDetected]=appData.histFaltas[lastDetected].filter(d=>d!==todayKey);
-
-  save();
-  sonidoExito();
-
-  // Pulso visual en cámara
-  const cw = document.getElementById('camWrap');
-  if(cw){ cw.classList.add('pulse-ok'); setTimeout(()=>cw.classList.remove('pulse-ok'),700); }
-
-  toast('✅ '+lastDetected+' — Presente · '+(aT?'🟢 A tiempo':'🟡 Tarde')+' · '+hora);
-  marcadosEnSesion.add(lastDetected);
+  save(); sonidoExito();
+  const cw=document.getElementById('camWrap');
+  if(cw){cw.classList.add('pulse-ok');setTimeout(()=>cw.classList.remove('pulse-ok'),700);}
+  toast('✅ '+lastDetected+' — '+(aT?'🟢 A tiempo':'🟡 Tarde')+' · '+hr);
   renderLista();
 }
-
 function ignorarDet(){ document.getElementById('reconResult').style.display='none'; lastDetected=null; }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1091,19 +1033,17 @@ function renderLista(){
     const est=hoy[p.nombre]||'A';
     const f=(appData.histFaltas[p.nombre]||[]).length;
     const m=meta[p.nombre];
-    let infoExtra='';
-    if(est==='P' && m){
-      const puntBadge = m.aT
-        ? '<span class="badge badge-tiempo" style="font-size:9px;padding:2px 6px">🟢 A tiempo</span>'
-        : '<span class="badge badge-tarde" style="font-size:9px;padding:2px 6px">🟡 Tarde</span>';
-      infoExtra=`<span style="font-size:10px;color:var(--text2)">📅 ${m.fechaHora}</span> ${puntBadge}`;
-    }
+    const extra=est==='P'&&m
+      ?`<div style="margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span style="font-size:10px;color:var(--text2)">📅 ${m.fechaHora}</span>
+          <span class="badge ${m.aT?'badge-tiempo':'badge-tarde'}" style="font-size:9px;padding:2px 7px">${m.aT?'🟢 A tiempo':'🟡 Tarde'}</span>
+        </div>`:'';
     return `<div class="a-item ${est==='P'?'presente':'ausente'}" onclick="toggleAsist('${p.nombre}')">
       <div class="av" style="width:36px;height:36px;font-size:12px">${iniciales(p.nombre)}</div>
       <div style="flex:1;min-width:0">
         <div class="a-name">${p.nombre}</div>
         <div class="a-sub">Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}${f?' · '+f+' falta'+(f>1?'s':''):''}${f>=3?' ⚠️':''}</div>
-        ${infoExtra?'<div style="margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap">'+infoExtra+'</div>':''}
+        ${extra}
       </div>
       <span class="badge ${est==='P'?'badge-g':'badge-r'}">${est==='P'?'✓ Presente':'✗ Ausente'}</span>
     </div>`;
@@ -1115,15 +1055,11 @@ function toggleAsist(nombre){
   const actual=appData.asistencia[todayKey][nombre]||'A';
   const nuevo=actual==='P'?'A':'P';
   appData.asistencia[todayKey][nombre]=nuevo;
-  // Guardar metadatos si pasa a presente
   if(nuevo==='P'){
     if(!appData.asistencia._meta) appData.asistencia._meta={};
     if(!appData.asistencia._meta[todayKey]) appData.asistencia._meta[todayKey]={};
-    if(!appData.asistencia._meta[todayKey][nombre]){
-      appData.asistencia._meta[todayKey][nombre]={
-        hora:timestampHora(), aT:esATiempo(), fechaHora:fechaHoraCompleta()
-      };
-    }
+    if(!appData.asistencia._meta[todayKey][nombre])
+      appData.asistencia._meta[todayKey][nombre]={hora:horaActual(),aT:esATiempo(),fechaHora:fechaHoraActual()};
   }
   if(!appData.histFaltas[nombre]) appData.histFaltas[nombre]=[];
   if(nuevo==='A'){ if(!appData.histFaltas[nombre].includes(todayKey)) appData.histFaltas[nombre].push(todayKey); }
@@ -1145,17 +1081,8 @@ function exportarCSV(){
   a.download='asistencia_'+cfg.colegio.replace(/\s/g,'_')+'_'+todayKey+'.csv'; a.click();
 }
 
-function cerrarTomaLista(){
-  const sinMarcar = appData.personas.filter(p=>!(appData.asistencia[todayKey]||{})[p.nombre]);
-  const msg = sinMarcar.length
-    ? `¿Cerrar toma de lista? Se marcarán ${sinMarcar.length} persona${sinMarcar.length>1?'s':''} como AUSENTE${sinMarcar.length>1?'S':''} automáticamente.`
-    : '¿Cerrar toma de lista? Todos ya fueron marcados.';
-  if(!confirm(msg)) return;
-  aplicarAusentes();
-  // Si había sesión activa, también cerrarla
-  if(sesionAutoActiva) toggleSesionAuto();
-  toast('🔒 Toma de lista cerrada — ausentes aplicados');
-}
+// ═══════════════════════════════════════════════════════════════
+// ALERTAS
 // ═══════════════════════════════════════════════════════════════
 function renderAlertas(){
   const c=document.getElementById('alertasContainer');
@@ -1259,8 +1186,6 @@ function switchTab(id){
     actualizarInfoModeloCache();
     document.getElementById('cfgColegio').value=cfg.colegio;
     document.getElementById('cfgDocente').value=cfg.docente;
-    const hl=document.getElementById('cfgHoraLimite');
-    if(hl) hl.value=cfg.horaLimite||'07:00';
   }
 }
 
