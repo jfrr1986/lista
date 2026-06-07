@@ -15,6 +15,79 @@
   --radius:12px;--radius-sm:8px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* ══════ PANTALLA PIN ══════ */
+#pinScreen{
+  position:fixed;inset:0;background:var(--bg);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;
+}
+.pin-logo{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;
+  box-shadow:0 8px 32px rgba(79,142,247,.3)}
+.pin-title{font-size:20px;font-weight:700;margin-bottom:4px;text-align:center}
+.pin-sub{font-size:12px;color:var(--text2);margin-bottom:28px;text-align:center;line-height:1.5}
+.pin-dots{display:flex;gap:14px;margin-bottom:28px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:all .15s}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+.pin-dot.error{background:var(--red);border-color:var(--red);animation:shake .4s ease}
+.pin-dot.ok{background:var(--green);border-color:var(--green)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.pin-teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;width:100%}
+.pin-btn{
+  height:64px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:22px;font-weight:600;
+  cursor:pointer;transition:all .1s;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+}
+.pin-btn:active{background:var(--bg3);transform:scale(.94)}
+.pin-btn.wide{grid-column:span 2}
+.pin-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.pin-btn .sub{font-size:8px;color:var(--text3);letter-spacing:.1em;margin-top:2px}
+.pin-btn.accent .sub{color:rgba(255,255,255,.6)}
+.pin-error{font-size:12px;color:var(--red);min-height:18px;margin-bottom:12px;text-align:center;font-weight:500}
+.pin-links{margin-top:20px;display:flex;gap:16px}
+.pin-link{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline}
+.pin-bloqueado{font-size:13px;color:var(--amber);margin-top:12px;text-align:center}
+.perfil-badge{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;
+  font-size:11px;font-weight:600;margin-bottom:16px;
+}
+.pb-admin{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.pb-docente{background:rgba(79,142,247,.15);color:var(--accent);border:1px solid rgba(79,142,247,.3)}
+.pb-visualizador{background:rgba(139,147,181,.15);color:var(--text2);border:1px solid var(--border)}
+
+/* ══════ ASISTENTE PRIMER USO ══════ */
+#setupScreen{
+  position:fixed;inset:0;background:var(--bg);z-index:490;
+  display:none;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:0;overflow-y:auto;
+}
+.setup-step{display:none;flex-direction:column;align-items:center;padding:30px 20px;min-height:100vh;width:100%;max-width:420px;margin:0 auto}
+.setup-step.active{display:flex}
+.setup-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.setup-title{font-size:18px;font-weight:700;margin-bottom:8px;text-align:center}
+.setup-sub{font-size:13px;color:var(--text2);margin-bottom:24px;text-align:center;line-height:1.6}
+.setup-pin-wrap{display:flex;gap:14px;margin-bottom:12px}
+.setup-pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:all .15s}
+.setup-pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+
+/* ══════ INDICADOR PERFIL EN HEADER ══════ */
+.header-perfil{
+  display:flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0;
+}
+.hp-admin{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.hp-docente{background:rgba(79,142,247,.15);color:var(--accent);border:1px solid rgba(79,142,247,.25)}
+.hp-visualizador{background:rgba(139,147,181,.15);color:var(--text2);border:1px solid var(--border)}
+
+/* ══════ BLOQUEO INACTIVIDAD ══════ */
+#inactividadBar{
+  position:fixed;bottom:0;left:0;right:0;height:3px;background:var(--bg3);z-index:400;
+  display:none;
+}
+#inactividadProg{height:100%;background:var(--accent);width:100%;transition:width 1s linear}
+
+/* ══════ LOADING ══════ */
 #loadingScreen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
 .load-icon{font-size:52px;margin-bottom:16px}
 .load-title{font-size:18px;font-weight:600;margin-bottom:8px}
@@ -24,16 +97,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .load-step{font-size:12px;color:var(--text2);min-height:18px}
 .load-cache{font-size:11px;color:var(--green);margin-top:8px;display:none}
 .load-storage-note{margin-top:16px;font-size:11px;color:var(--text3);line-height:1.6;max-width:280px}
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
-.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+
+/* ══════ APP ══════ */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50}
+.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .header-info{flex:1;min-width:0}
-.h-title{font-size:15px;font-weight:600}
-.h-sub{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-title{font-size:14px;font-weight:600}
+.h-sub{font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:1;min-width:72px;padding:10px 6px;text-align:center;font-size:10px;color:var(--text2);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab{flex:1;min-width:64px;padding:10px 4px;text-align:center;font-size:10px;color:var(--text2);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
-.tab span{display:block;font-size:17px;margin-bottom:2px}
+.tab span{display:block;font-size:16px;margin-bottom:2px}
+.tab.blocked{opacity:.35;cursor:not-allowed}
 .section{display:none;padding:14px}
 .section.active{display:block}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
@@ -43,7 +119,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.65)}
 .cam-overlay.hidden{display:none}
-/* Flash de reconocimiento */
 .cam-flash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .1s}
 .cam-flash.green{background:rgba(34,197,94,.25)}
 .cam-flash.red{background:rgba(239,68,68,.2)}
@@ -58,13 +133,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-amber{background:var(--amber);color:#000}
 .btn-sm{padding:7px 12px;font-size:12px;width:auto}
 .cam-btn-group{display:flex;gap:8px;margin-bottom:10px}
-/* Auto-reconocimiento status */
 .auto-bar{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;gap:8px}
 .auto-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0}
 .auto-dot.scanning{background:var(--amber);animation:pulse 1s infinite}
 .auto-dot.ok{background:var(--green)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-/* Resultado reconocimiento */
 .recono-box{background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:12px;border:1px solid var(--border);text-align:center;transition:border-color .3s}
 .recono-box.match{border-color:var(--green)}
 .recono-box.unknown{border-color:var(--red)}
@@ -74,20 +147,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .recono-auto{font-size:11px;margin-top:6px;padding:4px 10px;border-radius:20px;display:inline-block}
 .recono-auto.ok{background:rgba(34,197,94,.15);color:var(--green)}
 .recono-auto.wait{background:rgba(245,158,11,.15);color:var(--amber)}
-/* Personas */
 .p-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border)}
 .av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
 .p-info{flex:1;min-width:0}
 .p-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-sub{font-size:11px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-actions{display:flex;gap:6px;flex-shrink:0}
-/* Asistencia */
-.a-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:6px;border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.a-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:6px;border:1px solid var(--border);transition:all .15s}
 .a-item.presente{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06)}
 .a-item.ausente{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
 .a-item.tarde{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.05)}
-.a-name{flex:1;font-size:13px;font-weight:500;min-width:0}
-.a-sub{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-item.clickable{cursor:pointer}
+.a-item.clickable:active{transform:scale(.99)}
 .a-time{font-size:10px;color:var(--text3);margin-top:2px}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .badge-g{background:rgba(34,197,94,.15);color:var(--green)}
@@ -121,13 +192,12 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .filtros::-webkit-scrollbar{display:none}
 .chip{padding:5px 12px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0}
 .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:30px;font-size:13px;z-index:300;transition:transform .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:30px;font-size:13px;z-index:600;transition:transform .3s;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .store-info{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.7;border:1px solid var(--border)}
 .store-info strong{color:var(--text)}
 .cache-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600}
 .cache-badge.net{background:rgba(79,142,247,.12);border-color:rgba(79,142,247,.3);color:var(--accent)}
-/* Countdown ring */
 .count-ring{width:36px;height:36px;flex-shrink:0}
 .count-ring svg{transform:rotate(-90deg)}
 .count-ring circle{fill:none;stroke-width:3}
@@ -135,26 +205,136 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .count-ring .fg{stroke:var(--green);stroke-linecap:round;transition:stroke-dashoffset .1s linear}
 .count-text{position:absolute;font-size:10px;font-weight:700;color:var(--green)}
 .count-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
-/* Cierre sesión banner */
 .session-banner{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;gap:10px}
-.session-time{font-size:18px;font-weight:700;color:var(--accent);min-width:48px}
+/* Sección bloqueada para visualizador */
+.locked-msg{text-align:center;padding:40px 20px;color:var(--text2)}
+.locked-msg .lock-icon{font-size:44px;margin-bottom:12px}
+.locked-msg p{font-size:13px;line-height:1.6}
 </style>
 </head>
 <body>
 
-<div id="loadingScreen">
-  <div class="load-icon">🧠</div>
-  <div class="load-title">Lista Facial</div>
-  <div class="load-sub">Cargando modelos de reconocimiento facial</div>
-  <div class="prog-bg"><div class="prog-bar" id="progBar"></div></div>
-  <div class="load-step" id="loadStep">Iniciando...</div>
-  <div class="load-cache" id="cacheMsg">⚡ Modelos en caché — carga instantánea sin internet</div>
-  <div class="load-storage-note">
-    📦 Los modelos se guardan en este dispositivo tras la primera descarga.<br>
-    Las fotos <strong>nunca se almacenan</strong> — solo vectores matemáticos.
+<!-- ══════════════════════════════════════════
+     PANTALLA PIN
+══════════════════════════════════════════ -->
+<div id="pinScreen">
+  <div class="pin-logo">🎓</div>
+  <div class="pin-title" id="pinTitle">Lista Facial</div>
+  <div class="pin-sub" id="pinSub">Ingresa tu PIN para continuar</div>
+  <div id="pinPerfilBadge" style="display:none"></div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-error" id="pinError"></div>
+  <div class="pin-teclado" id="pinTeclado">
+    <button class="pin-btn" onclick="pinPress('1')">1<span class="sub"></span></button>
+    <button class="pin-btn" onclick="pinPress('2')">2<span class="sub">ABC</span></button>
+    <button class="pin-btn" onclick="pinPress('3')">3<span class="sub">DEF</span></button>
+    <button class="pin-btn" onclick="pinPress('4')">4<span class="sub">GHI</span></button>
+    <button class="pin-btn" onclick="pinPress('5')">5<span class="sub">JKL</span></button>
+    <button class="pin-btn" onclick="pinPress('6')">6<span class="sub">MNO</span></button>
+    <button class="pin-btn" onclick="pinPress('7')">7<span class="sub">PQRS</span></button>
+    <button class="pin-btn" onclick="pinPress('8')">8<span class="sub">TUV</span></button>
+    <button class="pin-btn" onclick="pinPress('9')">9<span class="sub">WXYZ</span></button>
+    <button class="pin-btn" onclick="pinBorrar()" style="font-size:18px">⌫</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn accent" onclick="pinConfirmar()">OK</button>
+  </div>
+  <div class="pin-bloqueado" id="pinBloqueado" style="display:none">🔒 Bloqueado — espera <span id="pinCuentaAtras"></span>s</div>
+  <div class="pin-links">
+    <span class="pin-link" onclick="mostrarRecuperacion()" id="linkOlvide">¿Olvidaste el PIN?</span>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     ASISTENTE PRIMER USO
+══════════════════════════════════════════ -->
+<div id="setupScreen">
+  <!-- Paso 1: Bienvenida + datos institución -->
+  <div class="setup-step active" id="setupStep1">
+    <div style="font-size:56px;margin-bottom:16px">🎓</div>
+    <div class="setup-title">¡Bienvenido a Lista Facial!</div>
+    <div class="setup-sub">Configura tu institución para empezar. Solo tomará un minuto.</div>
+    <div style="width:100%;max-width:340px">
+      <label class="label">Nombre de la institución *</label>
+      <input class="input" id="setupColegio" placeholder="Institución Educativa...">
+      <label class="label">Docente / Responsable *</label>
+      <input class="input" id="setupDocente" placeholder="Nombre completo">
+    </div>
+    <button class="btn btn-primary" style="max-width:340px;margin-top:8px" onclick="setupNext(2)">Continuar →</button>
+  </div>
+
+  <!-- Paso 2: Crear PIN admin -->
+  <div class="setup-step" id="setupStep2">
+    <div class="setup-num">2</div>
+    <div class="setup-title">Crea tu PIN de Administrador</div>
+    <div class="setup-sub">Este PIN tendrá acceso total a todas las funciones. Elige 4 dígitos que recuerdes.</div>
+    <div class="setup-pin-wrap" id="setupDots">
+      <div class="setup-pin-dot" id="spd0"></div>
+      <div class="setup-pin-dot" id="spd1"></div>
+      <div class="setup-pin-dot" id="spd2"></div>
+      <div class="setup-pin-dot" id="spd3"></div>
+    </div>
+    <div class="pin-error" id="setupError"></div>
+    <div class="pin-teclado">
+      <button class="pin-btn" onclick="setupPinPress('1')">1</button>
+      <button class="pin-btn" onclick="setupPinPress('2')">2</button>
+      <button class="pin-btn" onclick="setupPinPress('3')">3</button>
+      <button class="pin-btn" onclick="setupPinPress('4')">4</button>
+      <button class="pin-btn" onclick="setupPinPress('5')">5</button>
+      <button class="pin-btn" onclick="setupPinPress('6')">6</button>
+      <button class="pin-btn" onclick="setupPinPress('7')">7</button>
+      <button class="pin-btn" onclick="setupPinPress('8')">8</button>
+      <button class="pin-btn" onclick="setupPinPress('9')">9</button>
+      <button class="pin-btn" onclick="setupPinBorrar()">⌫</button>
+      <button class="pin-btn" onclick="setupPinPress('0')">0</button>
+      <button class="pin-btn accent" onclick="setupPinConfirmar()">OK</button>
+    </div>
+  </div>
+
+  <!-- Paso 3: Pregunta de seguridad -->
+  <div class="setup-step" id="setupStep3">
+    <div class="setup-num">3</div>
+    <div class="setup-title">Pregunta de recuperación</div>
+    <div class="setup-sub">Si olvidas el PIN, esta pregunta te permitirá restablecerlo.</div>
+    <div style="width:100%;max-width:340px">
+      <label class="label">Pregunta de seguridad</label>
+      <select class="input" id="setupPregunta">
+        <option value="mascota">¿Nombre de tu primera mascota?</option>
+        <option value="ciudad">¿Ciudad donde naciste?</option>
+        <option value="colegio">¿Nombre del colegio donde estudiaste?</option>
+        <option value="madre">¿Nombre de tu madre?</option>
+        <option value="pelicula">¿Película favorita?</option>
+      </select>
+      <label class="label">Respuesta *</label>
+      <input class="input" id="setupRespuesta" placeholder="Tu respuesta..." autocomplete="off">
+    </div>
+    <button class="btn btn-success" style="max-width:340px;margin-top:8px" onclick="setupFinalizar()">✅ ¡Comenzar!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LOADING MODELOS
+══════════════════════════════════════════ -->
+<div id="loadingScreen" style="display:none">
+  <div class="load-icon">🧠</div>
+  <div class="load-title">Cargando modelos</div>
+  <div class="load-sub">Reconocimiento facial — primera carga</div>
+  <div class="prog-bg"><div class="prog-bar" id="progBar"></div></div>
+  <div class="load-step" id="loadStep">Iniciando...</div>
+  <div class="load-cache" id="cacheMsg">⚡ Modelos en caché — carga sin internet</div>
+  <div class="load-storage-note">
+    📦 Los modelos se guardan en este dispositivo.<br>
+    Las fotos <strong>nunca se almacenan</strong>.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP PRINCIPAL
+══════════════════════════════════════════ -->
 <div id="appContent" style="display:none">
   <div class="header">
     <div class="logo">🎓</div>
@@ -162,28 +342,26 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
       <div class="h-title">Lista Facial</div>
       <div class="h-sub" id="fechaHdr"></div>
     </div>
-    <span id="modelCacheBadge" class="cache-badge net" style="flex-shrink:0;font-size:9px">🌐 Red</span>
-    <button class="btn btn-outline btn-sm" onclick="switchTab('config')" style="width:auto;padding:6px 10px;font-size:18px">⚙️</button>
+    <span id="modelCacheBadge" class="cache-badge net" style="flex-shrink:0;font-size:9px;display:none">🌐</span>
+    <div id="headerPerfilBadge" class="header-perfil hp-admin" onclick="cerrarSesion()" title="Toca para cerrar sesión">👤 <span id="hpNombre">Admin</span></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('reconocer')"><span>🎯</span>Reconocer</button>
-    <button class="tab" onclick="switchTab('personas')"><span>👥</span>Personas</button>
-    <button class="tab" onclick="switchTab('lista')"><span>📋</span>Lista</button>
-    <button class="tab" onclick="switchTab('alertas')"><span>🔔</span>Alertas</button>
-    <button class="tab" onclick="switchTab('config')"><span>⚙️</span>Config</button>
+  <div class="tabs" id="mainTabs">
+    <button class="tab active" id="tab-reconocer" onclick="switchTab('reconocer')"><span>🎯</span>Reconocer</button>
+    <button class="tab" id="tab-personas" onclick="switchTabGuarded('personas')"><span>👥</span>Personas</button>
+    <button class="tab" id="tab-lista" onclick="switchTab('lista')"><span>📋</span>Lista</button>
+    <button class="tab" id="tab-alertas" onclick="switchTab('alertas')"><span>🔔</span>Alertas</button>
+    <button class="tab" id="tab-config" onclick="switchTabGuarded('config')"><span>⚙️</span>Config</button>
   </div>
 
   <!-- RECONOCER -->
   <div id="sec-reconocer" class="section active">
-    <!-- Banner sesión activa -->
     <div class="session-banner" id="sessionBanner" style="display:none">
       <div>
         <div style="font-weight:600;font-size:12px">📋 Sesión de lista activa</div>
-        <div style="color:var(--text2);font-size:11px">Al detener la cámara se aplicarán los ausentes automáticamente</div>
+        <div style="color:var(--text2);font-size:11px">Al cerrar la cámara se aplicarán ausentes automáticamente</div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">📸 Cámara
         <span style="margin-left:auto;font-size:10px;color:var(--text3)" id="horaReloj"></span>
@@ -197,36 +375,29 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
           <span style="color:rgba(255,255,255,.6);font-size:12px">Toca para activar y tomar lista</span>
         </div>
       </div>
-
-      <!-- Barra estado auto-reconocimiento -->
       <div class="auto-bar" id="autoBar" style="display:none">
         <div class="auto-dot" id="autoDot"></div>
-        <div style="flex:1">
-          <span id="autoBarText" style="color:var(--text2)">Buscando rostros...</span>
-        </div>
+        <div style="flex:1"><span id="autoBarText" style="color:var(--text2)">Buscando rostros...</span></div>
         <div class="count-wrap" id="countWrap" style="display:none">
           <svg class="count-ring" viewBox="0 0 36 36">
             <circle class="bg" cx="18" cy="18" r="15.9"/>
             <circle class="fg" id="countCircle" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100"/>
           </svg>
-          <span class="count-text" id="countText">3</span>
+          <span class="count-text" id="countText">2</span>
         </div>
       </div>
-
       <div class="cam-btn-group">
         <button class="btn btn-primary" id="btnCam" onclick="toggleCam()">▶ Activar cámara y tomar lista</button>
         <button class="btn btn-outline btn-sm" onclick="flipCam()" style="width:44px">🔄</button>
       </div>
     </div>
-
     <div id="reconResult" class="recono-box" style="display:none">
       <div id="reconIcon" style="font-size:36px">🤔</div>
       <div class="recono-name" id="reconName">—</div>
       <div class="recono-grado" id="reconGrado"></div>
       <div class="recono-sub" id="reconSub"></div>
-      <div id="reconAutoMsg" class="recono-auto wait" style="margin-top:6px;display:none"></div>
+      <div id="reconAutoMsg" class="recono-auto wait" style="display:none"></div>
     </div>
-
     <div id="noPersonasAlert" class="alert alert-i" style="display:none">
       <div class="a-title">ℹ️ Sin personas registradas</div>
       Ve a <strong>Personas</strong> para registrar y entrenar rostros.
@@ -235,18 +406,12 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 
   <!-- PERSONAS -->
   <div id="sec-personas" class="section">
-    <div class="filtros" id="filtrosGrado">
-      <button class="chip active" onclick="setFiltroGrado('todos',this)">Todos</button>
-    </div>
-    <button class="btn btn-primary" onclick="abrirModalPersona()" style="margin-bottom:14px">＋ Registrar persona</button>
+    <div class="filtros" id="filtrosGrado"><button class="chip active" onclick="setFiltroGrado('todos',this)">Todos</button></div>
+    <button class="btn btn-primary" id="btnRegistrar" onclick="abrirModalPersona()" style="margin-bottom:14px">＋ Registrar persona</button>
     <div id="listaPersonas"></div>
     <div id="sinPersonasMsg" style="text-align:center;padding:30px 0;color:var(--text2);display:none">
       <div style="font-size:40px;margin-bottom:10px">👤</div>
       <div style="font-size:14px">No hay personas registradas</div>
-    </div>
-    <div class="store-info" style="margin-top:16px">
-      <strong>📦 Almacenamiento</strong><br>
-      Los vectores faciales, asistencia y datos se guardan en <strong>localStorage</strong> de este dispositivo. Los modelos de IA en <strong>IndexedDB</strong>. <strong>Las imágenes nunca se almacenan.</strong>
     </div>
   </div>
 
@@ -257,13 +422,11 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
       <div class="stat-c"><div class="stat-n" id="stT" style="color:var(--amber)">0</div><div class="stat-l">Tardanzas</div></div>
       <div class="stat-c"><div class="stat-n" id="stA" style="color:var(--red)">0</div><div class="stat-l">Ausentes</div></div>
     </div>
-    <div class="filtros" id="filtrosListaGrado">
-      <button class="chip active" onclick="setFiltroLista('todos',this)">Todos</button>
-    </div>
+    <div class="filtros" id="filtrosListaGrado"><button class="chip active" onclick="setFiltroLista('todos',this)">Todos</button></div>
     <div id="listaAsistencia"></div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <button class="btn btn-outline btn-sm" onclick="exportarCSV()">⬇ Exportar CSV</button>
-      <button class="btn btn-danger btn-sm" onclick="resetearLista()">🗑 Resetear lista hoy</button>
+      <button class="btn btn-danger btn-sm" id="btnResetLista" onclick="resetearLista()">🗑 Resetear hoy</button>
     </div>
   </div>
 
@@ -282,19 +445,13 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
       <input class="input" id="cfgDocente" placeholder="Nombre del docente" onchange="saveConfig()">
     </div>
     <div class="card">
-      <div class="card-title">⏰ Control de puntualidad</div>
-      <label class="label">Hora límite para marcar "A tiempo" (después = Tarde)</label>
+      <div class="card-title">⏰ Puntualidad</div>
+      <label class="label">Hora límite "A tiempo"</label>
       <input class="input" type="time" id="cfgHoraCorte" value="07:00" onchange="saveConfig()">
       <label class="label">Confianza mínima para marcar automático (%)</label>
       <input class="input" type="number" id="cfgConfianza" value="75" min="50" max="99" onchange="saveConfig()">
-      <div style="font-size:11px;color:var(--text2);margin-top:-6px;margin-bottom:10px">
-        Recomendado: 70-80%. Más alto = más preciso pero puede no reconocer con mala luz.
-      </div>
-      <label class="label">Segundos de confirmación antes de marcar automático</label>
+      <label class="label">Segundos de confirmación</label>
       <input class="input" type="number" id="cfgSegConfirm" value="2" min="1" max="5" onchange="saveConfig()">
-      <div style="font-size:11px;color:var(--text2);margin-top:-6px">
-        El sistema espera este tiempo viendo el mismo rostro antes de marcar para evitar falsos positivos.
-      </div>
     </div>
     <div class="card">
       <div class="card-title">🔊 Sonidos</div>
@@ -303,24 +460,37 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
         Activar sonidos de reconocimiento
       </label>
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-outline btn-sm" onclick="sonarExito()">▶ Probar éxito</button>
-        <button class="btn btn-outline btn-sm" onclick="sonarTarde()">▶ Probar tarde</button>
-        <button class="btn btn-outline btn-sm" onclick="sonarFallo()">▶ Probar desconocido</button>
+        <button class="btn btn-outline btn-sm" onclick="sonarExito()">▶ Éxito</button>
+        <button class="btn btn-outline btn-sm" onclick="sonarTarde()">▶ Tarde</button>
+        <button class="btn btn-outline btn-sm" onclick="sonarFallo()">▶ Desconocido</button>
       </div>
+    </div>
+    <!-- Seguridad -->
+    <div class="card">
+      <div class="card-title">🔐 Seguridad y acceso</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">
+        Perfil activo: <strong id="cfgPerfilActivo">—</strong><br>
+        Tiempo sin actividad antes de bloqueo: <strong id="cfgTiempoInact">5 min</strong>
+      </div>
+      <label class="label">Minutos de inactividad antes de bloqueo</label>
+      <input class="input" type="number" id="cfgInactividad" value="5" min="1" max="60" onchange="saveConfig()">
+      <div style="font-size:11px;color:var(--text2);margin-top:-6px;margin-bottom:14px">Mínimo 1 min, máximo 60 min</div>
+
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px">Perfiles configurados</div>
+      <div id="perfilesLista" style="margin-bottom:14px"></div>
+
+      <button class="btn btn-outline" onclick="abrirModalCambiarPin()" style="margin-bottom:8px">🔑 Cambiar PIN admin</button>
+      <button class="btn btn-outline" onclick="abrirModalPinDocente()" style="margin-bottom:8px">➕ Configurar PIN Docente</button>
+      <button class="btn btn-outline" onclick="abrirModalPinVisualizador()" style="margin-bottom:8px">➕ Configurar PIN Visualizador</button>
+      <button class="btn btn-danger" onclick="cerrarSesion()">🔒 Cerrar sesión ahora</button>
     </div>
     <div class="card">
       <div class="card-title">🧠 Modelos de IA</div>
-      <div class="store-info" style="margin-bottom:12px">
-        Los modelos (~6MB) se descargan una vez y se guardan en <strong>IndexedDB</strong> de este navegador. Las siguientes veces cargan sin internet.<br><br>
-        <strong>Las imágenes NUNCA se guardan.</strong> Solo 128 números por foto (vector facial, ~2KB).
-      </div>
-      <div id="modelStatusCard" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
-        Verificando caché...
-      </div>
-      <button class="btn btn-outline btn-sm" style="width:auto" onclick="limpiarCacheModelos()">🗑 Limpiar caché de modelos</button>
+      <div id="modelStatusCard" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">Verificando...</div>
+      <button class="btn btn-outline btn-sm" style="width:auto" onclick="limpiarCacheModelos()">🗑 Limpiar caché</button>
     </div>
     <div class="card">
-      <div class="card-title">📦 Respaldo de datos</div>
+      <div class="card-title">📦 Respaldo</div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:10px" id="cfgStorageInfo"></div>
       <button class="btn btn-outline" onclick="exportarBackup()" style="margin-bottom:8px">⬇ Exportar respaldo (JSON)</button>
       <button class="btn btn-outline" onclick="document.getElementById('fileImport').click()" style="margin-bottom:8px">⬆ Importar respaldo</button>
@@ -329,15 +499,13 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
     </div>
     <div class="card">
       <div class="card-title">ℹ️ Versión</div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.8">
-        Lista Facial v4.0<br>
-        Reconocimiento: automático con confirmación<br>
-        Puntualidad: A tiempo / Tarde por hora de corte<br>
-        Cierre de sesión: ausentes automáticos
-      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">Lista Facial v5.0<br>Acceso: PIN 4 dígitos · 3 perfiles<br>Bloqueo automático por inactividad</div>
     </div>
   </div>
 </div>
+
+<!-- Barra inactividad -->
+<div id="inactividadBar"><div id="inactividadProg"></div></div>
 
 <!-- Modal nueva persona -->
 <div class="modal-bg hidden" id="modalPersona">
@@ -400,14 +568,14 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   <div class="modal">
     <h2>📷 <span id="captNombre" style="color:var(--accent)"></span></h2>
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.6">
-      Captura mínimo <strong style="color:var(--amber)">5 fotos</strong>. Varía: frente, lados, con y sin lentes, cerca/lejos.<br>
-      <span style="color:var(--text3)">💡 Las fotos NO se guardan — solo vectores matemáticos del rostro.</span>
+      Mínimo <strong style="color:var(--amber)">5 fotos</strong>. Varía: frente, lados, con y sin lentes.<br>
+      <span style="color:var(--text3)">💡 Las fotos NO se guardan — solo vectores matemáticos.</span>
     </div>
     <div class="cam-wrap" style="height:220px">
       <video id="video2" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
     </div>
     <div class="dots" id="fotoDots"></div>
-    <div id="captStatus" style="font-size:12px;color:var(--text2);margin:4px 0 10px;min-height:16px;line-height:1.5"></div>
+    <div id="captStatus" style="font-size:12px;color:var(--text2);margin:4px 0 10px;min-height:16px"></div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <button class="btn btn-amber" onclick="capturarFoto()" id="btnCapturar">📸 Capturar</button>
       <button class="btn btn-outline btn-sm" onclick="flipCam2()" style="width:44px">🔄</button>
@@ -417,204 +585,49 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   </div>
 </div>
 
+<!-- Modal cambiar PIN -->
+<div class="modal-bg hidden" id="modalCambiarPin">
+  <div class="modal">
+    <h2 id="modalPinTitulo">🔑 Cambiar PIN Admin</h2>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px" id="modalPinSub">Ingresa el PIN actual y luego el nuevo.</div>
+    <label class="label">PIN actual</label>
+    <input class="input" type="password" id="pinActualInput" placeholder="••••" maxlength="4" inputmode="numeric">
+    <label class="label">PIN nuevo</label>
+    <input class="input" type="password" id="pinNuevoInput" placeholder="••••" maxlength="4" inputmode="numeric">
+    <label class="label">Confirmar PIN nuevo</label>
+    <input class="input" type="password" id="pinConfInput" placeholder="••••" maxlength="4" inputmode="numeric">
+    <div class="pin-error" id="cambiarPinError"></div>
+    <button class="btn btn-primary" onclick="guardarNuevoPin()">Guardar nuevo PIN</button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="cerrarModal('modalCambiarPin')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal recuperación PIN -->
+<div class="modal-bg hidden" id="modalRecuperacion">
+  <div class="modal">
+    <h2>🔓 Recuperar acceso</h2>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px" id="recupPregunta"></div>
+    <label class="label">Tu respuesta</label>
+    <input class="input" id="recupRespuesta" placeholder="Respuesta...">
+    <div class="pin-error" id="recupError"></div>
+    <button class="btn btn-primary" onclick="verificarRecuperacion()">Verificar</button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="cerrarModal('modalRecuperacion')">Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-// ESTADO
+// CONSTANTES
 // ═══════════════════════════════════════════════════════════════
-const DB_KEY  = 'rfApp_v4';
-const CFG_KEY = 'rfApp_cfg';
+const DB_KEY    = 'rfApp_v5';
+const CFG_KEY   = 'rfApp_cfg_v5';
+const SEC_KEY   = 'rfApp_sec';       // PINs y seguridad
 const IDB_NAME  = 'FaceModelsCache';
 const IDB_STORE = 'models';
-
-let appData = {personas:[], asistencia:{}, histFaltas:{}};
-let cfg = {
-  colegio:'Institución Educativa Taparto',
-  docente:'Jhon',
-  horaCorte:'07:00',
-  confianza:75,
-  segConfirm:2,
-  sonidos:true
-};
-
-let modelsLoaded = false;
-let faceMatcher  = null;
-let camStream = null, camStream2 = null;
-let facing = 'user', facing2 = 'user';
-let detectLoop = null;
-let currentPersonaIdx = null;
-let fotosCapturadas   = [];
-let filtroGrado = 'todos';
-let filtroLista = 'todos';
-
-// Estado de confirmación automática
-let confirmando = null;   // {nombre, inicio}
-let confirmTimer = null;
-let sessionActiva = false; // si la cámara está tomando lista
-
-const todayKey = new Date().toISOString().slice(0,10);
-let audioCtx = null;
-
-// ═══════════════════════════════════════════════════════════════
-// AUDIO — Web Audio API (sin archivos externos)
-// ═══════════════════════════════════════════════════════════════
-function getAudioCtx() {
-  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function sonarTono(frecs, duraciones, tipo='sine', vol=0.3) {
-  if(!cfg.sonidos) return;
-  try {
-    const ctx = getAudioCtx();
-    let t = ctx.currentTime;
-    frecs.forEach((f, i) => {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = tipo;
-      osc.frequency.setValueAtTime(f, t);
-      gain.gain.setValueAtTime(vol, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + duraciones[i]);
-      osc.start(t);
-      osc.stop(t + duraciones[i]);
-      t += duraciones[i] * 0.8;
-    });
-  } catch(e){}
-}
-
-// Éxito: dos tonos ascendentes limpios
-function sonarExito() {
-  sonarTono([523, 784], [0.12, 0.2], 'sine', 0.25);
-}
-
-// Tarde: tono medio + uno más bajo (llegó pero tarde)
-function sonarTarde() {
-  sonarTono([440, 330], [0.15, 0.25], 'sine', 0.22);
-}
-
-// Desconocido / fallo: tono descendente corto
-function sonarFallo() {
-  sonarTono([300, 200], [0.1, 0.18], 'triangle', 0.2);
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PERSISTENCIA
-// ═══════════════════════════════════════════════════════════════
-function save() {
-  try { localStorage.setItem(DB_KEY, JSON.stringify(appData)); } catch(e){ toast('⚠️ Error guardando'); }
-}
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem(DB_KEY)||'{}');
-    if(d.personas)   appData.personas   = d.personas;
-    if(d.asistencia) appData.asistencia = d.asistencia;
-    if(d.histFaltas) appData.histFaltas = d.histFaltas;
-  } catch(e){}
-  try {
-    const c = JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
-    if(c.colegio)    cfg.colegio    = c.colegio;
-    if(c.docente)    cfg.docente    = c.docente;
-    if(c.horaCorte)  cfg.horaCorte  = c.horaCorte;
-    if(c.confianza)  cfg.confianza  = Number(c.confianza);
-    if(c.segConfirm) cfg.segConfirm = Number(c.segConfirm);
-    if(c.sonidos !== undefined) cfg.sonidos = c.sonidos;
-  } catch(e){}
-}
-function saveConfig() {
-  cfg.colegio    = document.getElementById('cfgColegio').value;
-  cfg.docente    = document.getElementById('cfgDocente').value;
-  cfg.horaCorte  = document.getElementById('cfgHoraCorte').value;
-  cfg.confianza  = Number(document.getElementById('cfgConfianza').value);
-  cfg.segConfirm = Number(document.getElementById('cfgSegConfirm').value);
-  cfg.sonidos    = document.getElementById('cfgSonidos').checked;
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  document.getElementById('fechaHdr').textContent = cfg.colegio + ' · ' + hoy();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PUNTUALIDAD
-// ═══════════════════════════════════════════════════════════════
-function esTarde(fechaHora) {
-  // fechaHora: string ISO o Date
-  const d = fechaHora ? new Date(fechaHora) : new Date();
-  const [hC, mC] = cfg.horaCorte.split(':').map(Number);
-  return d.getHours() > hC || (d.getHours() === hC && d.getMinutes() > mC);
-}
-
-function formatHora(iso) {
-  if(!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-}
-
-function formatFechaHora(iso) {
-  if(!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('es-CO', {day:'2-digit',month:'short'}) + ' ' +
-    d.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-}
-
-// ═══════════════════════════════════════════════════════════════
-// MARCAR PRESENTE (con timestamp y tardanza)
-// ═══════════════════════════════════════════════════════════════
-function marcarPresente(nombre, autoMarcado=false) {
-  if(!nombre) return;
-  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey] = {};
-  const ya = appData.asistencia[todayKey][nombre];
-  // Si ya está marcado presente o tarde, no volver a marcar
-  if(ya && (ya.estado === 'P' || ya.estado === 'T')) {
-    if(autoMarcado) toast('ℹ️ '+nombre+' ya estaba marcado');
-    return;
-  }
-  const ahora = new Date();
-  const tarde = esTarde(ahora);
-  const estado = tarde ? 'T' : 'P';
-  appData.asistencia[todayKey][nombre] = {
-    estado,
-    hora: ahora.toISOString(),
-    auto: autoMarcado
-  };
-  // Quitar de historial de faltas
-  if(appData.histFaltas[nombre])
-    appData.histFaltas[nombre] = appData.histFaltas[nombre].filter(d=>d!==todayKey);
-  save();
-  if(tarde) {
-    sonarTarde();
-    toast('🕐 '+nombre+' — Tarde ('+formatHora(ahora.toISOString())+')');
-  } else {
-    sonarExito();
-    toast('✅ '+nombre+' — A tiempo ('+formatHora(ahora.toISOString())+')');
-  }
-  renderLista();
-}
-
-// Aplicar ausentes a todos los no marcados (al cerrar sesión)
-function aplicarAusentes() {
-  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey] = {};
-  let count = 0;
-  appData.personas.forEach(p => {
-    const reg = appData.asistencia[todayKey][p.nombre];
-    if(!reg || reg.estado === 'A') {
-      appData.asistencia[todayKey][p.nombre] = {estado:'A', hora: new Date().toISOString(), auto:true};
-      if(!appData.histFaltas[p.nombre]) appData.histFaltas[p.nombre] = [];
-      if(!appData.histFaltas[p.nombre].includes(todayKey)) appData.histFaltas[p.nombre].push(todayKey);
-      count++;
-    }
-  });
-  save();
-  renderLista(); renderAlertas();
-  if(count > 0) toast('📋 '+count+' ausente'+(count>1?'s':'')+' aplicados automáticamente');
-  else toast('✅ Lista completa — sin ausentes pendientes');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// CACHÉ IndexedDB
-// ═══════════════════════════════════════════════════════════════
 const MODEL_URL = 'https://jfrr1986.github.io/lista/model';
-
 const MODEL_FILES = [
   'tiny_face_detector_model-shard1',
   'tiny_face_detector_model-weights_manifest.json',
@@ -625,636 +638,773 @@ const MODEL_FILES = [
   'face_recognition_model-weights_manifest.json'
 ];
 
-function openIDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
-    req.onsuccess = e => resolve(e.target.result);
-    req.onerror   = () => reject(req.error);
-  });
-}
-function idbGet(db, key) {
-  return new Promise((res,rej)=>{ const r=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get(key); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
-}
-function idbSet(db, key, val) {
-  return new Promise((res,rej)=>{ const r=db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).put(val,key); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); });
-}
-function idbDel(db, key) {
-  return new Promise((res,rej)=>{ const r=db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).delete(key); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); });
+// ═══════════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════════
+let appData = {personas:[], asistencia:{}, histFaltas:{}};
+let cfg = {colegio:'Institución Educativa Taparto', docente:'Jhon',
+           horaCorte:'07:00', confianza:75, segConfirm:2, sonidos:true, inactividad:5};
+let sec = {
+  configurado: false,
+  pinAdmin: null,        // hash
+  pinDocente: null,      // hash o null
+  pinVisualizador: null, // hash o null
+  pregunta: 'mascota',
+  respuesta: null        // hash
+};
+
+// Sesión activa
+let sesion = {perfil: null, desde: null}; // perfil: 'admin'|'docente'|'visualizador'
+
+let modelsLoaded = false, faceMatcher = null;
+let camStream = null, camStream2 = null;
+let facing = 'user', facing2 = 'user';
+let detectLoop = null;
+let currentPersonaIdx = null, fotosCapturadas = [];
+let filtroGrado = 'todos', filtroLista = 'todos';
+let confirmando = null, confirmTimer = null;
+const todayKey = new Date().toISOString().slice(0,10);
+let audioCtx = null;
+
+// PIN input state
+let pinInput = '';
+let pinIntentos = 0;
+let pinBloqueadoHasta = 0;
+
+// Setup state
+let setupPinTemp = '';
+let setupPinConfirmando = false;
+let setupPinPrimero = '';
+
+// Inactividad
+let inactTimer = null, inactBarTimer = null;
+
+// PIN en modal
+let modalPinPerfil = 'admin'; // qué PIN se está configurando en el modal
+
+// ═══════════════════════════════════════════════════════════════
+// HASH SIMPLE (no criptográfico — para PIN local en el dispositivo)
+// ═══════════════════════════════════════════════════════════════
+function hashPin(pin) {
+  // FNV-1a 32-bit simple hash
+  let h = 2166136261;
+  for(let i=0;i<pin.length;i++){
+    h ^= pin.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h.toString(16);
 }
 
-async function verificarCache() {
-  try {
-    const db = await openIDB();
-    let n = 0;
-    for(const f of MODEL_FILES) { const c=await idbGet(db,MODEL_URL+'/'+f).catch(()=>null); if(c) n++; }
-    db.close(); return {cached:n, total:MODEL_FILES.length};
-  } catch(e){ return {cached:0,total:MODEL_FILES.length}; }
+// ═══════════════════════════════════════════════════════════════
+// PERSISTENCIA
+// ═══════════════════════════════════════════════════════════════
+function save(){ try{ localStorage.setItem(DB_KEY, JSON.stringify(appData)); }catch(e){toast('⚠️ Error guardando');} }
+function saveSec(){ localStorage.setItem(SEC_KEY, JSON.stringify(sec)); }
+
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DB_KEY)||'{}');
+    if(d.personas)   appData.personas   = d.personas;
+    if(d.asistencia) appData.asistencia = d.asistencia;
+    if(d.histFaltas) appData.histFaltas = d.histFaltas;
+  }catch(e){}
+  try{
+    const c=JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
+    if(c.colegio)    cfg.colegio    = c.colegio;
+    if(c.docente)    cfg.docente    = c.docente;
+    if(c.horaCorte)  cfg.horaCorte  = c.horaCorte;
+    if(c.confianza)  cfg.confianza  = Number(c.confianza);
+    if(c.segConfirm) cfg.segConfirm = Number(c.segConfirm);
+    if(c.inactividad)cfg.inactividad= Number(c.inactividad);
+    if(c.sonidos!==undefined) cfg.sonidos = c.sonidos;
+  }catch(e){}
+  try{
+    const s=JSON.parse(localStorage.getItem(SEC_KEY)||'{}');
+    if(s.configurado !== undefined) sec = {...sec, ...s};
+  }catch(e){}
 }
 
-async function limpiarCacheModelos() {
-  if(!confirm('¿Limpiar el caché de modelos?')) return;
-  try {
-    const db = await openIDB();
-    for(const f of MODEL_FILES) await idbDel(db, MODEL_URL+'/'+f).catch(()=>{});
-    db.close(); toast('✅ Caché limpiado'); actualizarInfoModeloCache();
-  } catch(e){ toast('❌ Error limpiando caché'); }
+function saveConfig(){
+  cfg.colegio    = document.getElementById('cfgColegio').value;
+  cfg.docente    = document.getElementById('cfgDocente').value;
+  cfg.horaCorte  = document.getElementById('cfgHoraCorte').value;
+  cfg.confianza  = Number(document.getElementById('cfgConfianza').value);
+  cfg.segConfirm = Number(document.getElementById('cfgSegConfirm').value);
+  cfg.sonidos    = document.getElementById('cfgSonidos').checked;
+  cfg.inactividad= Math.max(1, Math.min(60, Number(document.getElementById('cfgInactividad').value)));
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  document.getElementById('fechaHdr').textContent = cfg.colegio + ' · ' + hoy();
+  reiniciarInactividad();
 }
 
-async function actualizarInfoModeloCache() {
-  const {cached,total} = await verificarCache();
-  const el = document.getElementById('modelStatusCard');
-  const badge = document.getElementById('modelCacheBadge');
-  if(!el) return;
-  if(cached===total){
-    el.innerHTML=`<span style="color:var(--green)">✅ Modelos en caché local</span><br>${cached}/${total} archivos · Funciona sin internet<br><span style="color:var(--text3)">IndexedDB de este navegador</span>`;
-    if(badge){badge.textContent='⚡ Caché';badge.className='cache-badge';}
+// ═══════════════════════════════════════════════════════════════
+// SISTEMA DE PIN — PANTALLA DE ACCESO
+// ═══════════════════════════════════════════════════════════════
+function iniciarPantallaPIN(){
+  // Mostrar perfil selector si hay múltiples perfiles
+  const perfilesDisp = perfilesDisponibles();
+  if(perfilesDisp.length === 1){
+    document.getElementById('pinSub').textContent = 'Ingresa tu PIN para continuar';
+    document.getElementById('pinPerfilBadge').style.display='none';
   } else {
-    el.innerHTML=`<span style="color:var(--amber)">🌐 ${cached}/${total} en caché</span><br><span style="color:var(--text3)">Se descargarán del repositorio al cargar</span>`;
+    document.getElementById('pinSub').textContent = 'Ingresa el PIN de tu perfil';
+    document.getElementById('pinPerfilBadge').style.display='block';
+    document.getElementById('pinPerfilBadge').innerHTML = perfilesDisp.map(p=>
+      `<span class="perfil-badge pb-${p.key}" onclick="seleccionarPerfil('${p.key}')" style="cursor:pointer;margin:4px">${p.icon} ${p.label}</span>`
+    ).join('');
+  }
+  pinInput = '';
+  actualizarDotsPIN();
+}
+
+function perfilesDisponibles(){
+  const arr = [{key:'admin', icon:'👑', label:'Admin'}];
+  if(sec.pinDocente) arr.push({key:'docente', icon:'👨‍🏫', label:'Docente'});
+  if(sec.pinVisualizador) arr.push({key:'visualizador', icon:'👁', label:'Visualizador'});
+  return arr;
+}
+
+let perfilIntentando = null; // null = detectar por PIN, o forzado
+
+function seleccionarPerfil(p){ perfilIntentando = p; toast('Perfil: '+(p.charAt(0).toUpperCase()+p.slice(1))); }
+
+function pinPress(d){
+  const ahora = Date.now();
+  if(ahora < pinBloqueadoHasta){ actualizarBloqueoPIN(); return; }
+  if(pinInput.length >= 4) return;
+  pinInput += d;
+  actualizarDotsPIN();
+  if(pinInput.length === 4) setTimeout(pinConfirmar, 150);
+}
+
+function pinBorrar(){
+  if(pinInput.length > 0){ pinInput = pinInput.slice(0,-1); actualizarDotsPIN(); }
+}
+
+function actualizarDotsPIN(estado=''){
+  for(let i=0;i<4;i++){
+    const dot = document.getElementById('pd'+i);
+    dot.className = 'pin-dot' + (i < pinInput.length ? ' filled' : '') + (estado?' '+estado:'');
   }
 }
+
+function pinConfirmar(){
+  if(pinInput.length < 4){ document.getElementById('pinError').textContent='Ingresa 4 dígitos'; return; }
+  const h = hashPin(pinInput);
+  let perfilOk = null;
+
+  if(perfilIntentando){
+    // Verificar solo el perfil seleccionado
+    const pHash = perfilIntentando==='admin'?sec.pinAdmin: perfilIntentando==='docente'?sec.pinDocente:sec.pinVisualizador;
+    if(h === pHash) perfilOk = perfilIntentando;
+  } else {
+    // Detectar automáticamente
+    if(h === sec.pinAdmin) perfilOk = 'admin';
+    else if(sec.pinDocente && h === sec.pinDocente) perfilOk = 'docente';
+    else if(sec.pinVisualizador && h === sec.pinVisualizador) perfilOk = 'visualizador';
+  }
+
+  if(perfilOk){
+    // Acceso concedido
+    actualizarDotsPIN('ok');
+    pinIntentos = 0;
+    sesion = {perfil: perfilOk, desde: Date.now()};
+    setTimeout(()=>{
+      document.getElementById('pinScreen').style.display='none';
+      iniciarApp();
+    }, 400);
+  } else {
+    // Acceso denegado
+    pinIntentos++;
+    actualizarDotsPIN('error');
+    document.getElementById('pinError').textContent = pinIntentos >= 3
+      ? '❌ PIN incorrecto — demasiados intentos'
+      : '❌ PIN incorrecto ('+(3-pinIntentos)+' intentos restantes)';
+    if(pinIntentos >= 3){
+      pinBloqueadoHasta = Date.now() + 30000;
+      pinIntentos = 0;
+      bloquearPIN();
+    }
+    setTimeout(()=>{ pinInput=''; actualizarDotsPIN(); }, 600);
+  }
+}
+
+function bloquearPIN(){
+  document.getElementById('pinTeclado').style.opacity='.4';
+  document.getElementById('pinTeclado').style.pointerEvents='none';
+  document.getElementById('pinBloqueado').style.display='block';
+  const interval = setInterval(()=>{
+    const restante = Math.ceil((pinBloqueadoHasta - Date.now())/1000);
+    document.getElementById('pinCuentaAtras').textContent = restante;
+    if(restante <= 0){
+      clearInterval(interval);
+      document.getElementById('pinTeclado').style.opacity='1';
+      document.getElementById('pinTeclado').style.pointerEvents='auto';
+      document.getElementById('pinBloqueado').style.display='none';
+      document.getElementById('pinError').textContent='';
+      pinInput=''; actualizarDotsPIN();
+    }
+  }, 1000);
+}
+
+function actualizarBloqueoPIN(){
+  const r = Math.ceil((pinBloqueadoHasta - Date.now())/1000);
+  document.getElementById('pinCuentaAtras').textContent = r;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RECUPERACIÓN PIN
+// ═══════════════════════════════════════════════════════════════
+function mostrarRecuperacion(){
+  if(!sec.configurado){ toast('Sin PIN configurado'); return; }
+  const preguntas = {
+    mascota:'¿Nombre de tu primera mascota?',
+    ciudad:'¿Ciudad donde naciste?',
+    colegio:'¿Nombre del colegio donde estudiaste?',
+    madre:'¿Nombre de tu madre?',
+    pelicula:'¿Película favorita?'
+  };
+  document.getElementById('recupPregunta').textContent = preguntas[sec.pregunta] || '¿Respuesta de seguridad?';
+  document.getElementById('recupRespuesta').value='';
+  document.getElementById('recupError').textContent='';
+  document.getElementById('modalRecuperacion').classList.remove('hidden');
+}
+
+function verificarRecuperacion(){
+  const resp = document.getElementById('recupRespuesta').value.trim().toLowerCase();
+  if(hashPin(resp) === sec.respuesta){
+    cerrarModal('modalRecuperacion');
+    toast('✅ Acceso recuperado — inicia sesión como Admin');
+    // Forzar acceso como admin sin PIN
+    sesion = {perfil:'admin', desde: Date.now()};
+    document.getElementById('pinScreen').style.display='none';
+    iniciarApp();
+  } else {
+    document.getElementById('recupError').textContent='❌ Respuesta incorrecta';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ASISTENTE PRIMER USO
+// ═══════════════════════════════════════════════════════════════
+function setupNext(paso){
+  if(paso === 2){
+    const col = document.getElementById('setupColegio').value.trim();
+    const doc = document.getElementById('setupDocente').value.trim();
+    if(!col || !doc){ toast('⚠️ Completa todos los campos'); return; }
+    cfg.colegio = col; cfg.docente = doc;
+  }
+  document.querySelectorAll('.setup-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('setupStep'+paso).classList.add('active');
+}
+
+function setupPinPress(d){
+  if(setupPinTemp.length >= 4) return;
+  setupPinTemp += d;
+  actualizarDotsSetup();
+  if(setupPinTemp.length === 4 && !setupPinConfirmando){ setTimeout(()=>{
+    setupPinPrimero = setupPinTemp;
+    setupPinTemp = '';
+    setupPinConfirmando = true;
+    document.getElementById('setupError').textContent='';
+    actualizarDotsSetup();
+    // Cambiar subtítulo
+    document.querySelector('#setupStep2 .setup-sub').textContent='Repite el PIN para confirmar.';
+  }, 200); }
+  else if(setupPinTemp.length === 4 && setupPinConfirmando){ setTimeout(setupPinConfirmar, 150); }
+}
+function setupPinBorrar(){ if(setupPinTemp.length>0){setupPinTemp=setupPinTemp.slice(0,-1);actualizarDotsSetup();} }
+function actualizarDotsSetup(){ for(let i=0;i<4;i++) document.getElementById('spd'+i).className='setup-pin-dot'+(i<setupPinTemp.length?' filled':''); }
+function setupPinConfirmar(){
+  if(setupPinTemp !== setupPinPrimero){
+    document.getElementById('setupError').textContent='❌ Los PINs no coinciden. Intenta de nuevo.';
+    setupPinTemp=''; setupPinConfirmando=false; setupPinPrimero='';
+    document.querySelector('#setupStep2 .setup-sub').textContent='Elige 4 dígitos que recuerdes.';
+    actualizarDotsSetup(); return;
+  }
+  sec.pinAdmin = hashPin(setupPinTemp);
+  setupPinTemp=''; setupPinConfirmando=false;
+  setupNext(3);
+}
+function setupFinalizar(){
+  const resp = document.getElementById('setupRespuesta').value.trim();
+  if(!resp){ toast('⚠️ Escribe la respuesta de seguridad'); return; }
+  sec.pregunta   = document.getElementById('setupPregunta').value;
+  sec.respuesta  = hashPin(resp.toLowerCase());
+  sec.configurado = true;
+  saveSec();
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  document.getElementById('setupScreen').style.display='none';
+  // Ahora entrar como admin directamente
+  sesion = {perfil:'admin', desde: Date.now()};
+  iniciarApp();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SESIÓN Y PERMISOS
+// ═══════════════════════════════════════════════════════════════
+function esAdmin(){ return sesion.perfil === 'admin'; }
+function esDocente(){ return sesion.perfil === 'docente' || esAdmin(); }
+// visualizador puede ver todo pero no editar
+
+function cerrarSesion(){
+  if(!confirm('¿Cerrar sesión y volver a la pantalla de PIN?')) return;
+  // Detener cámara si estaba activa
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; clearInterval(detectLoop); }
+  sesion = {perfil:null, desde:null};
+  document.getElementById('appContent').style.display='none';
+  document.getElementById('pinScreen').style.display='flex';
+  pinInput=''; actualizarDotsPIN();
+  document.getElementById('pinError').textContent='';
+  pararInactividad();
+}
+
+function iniciarApp(){
+  document.getElementById('loadingScreen').style.display='flex';
+  actualizarUI_Perfil();
+  if(!modelsLoaded){ loadModels(); }
+  else {
+    document.getElementById('loadingScreen').style.display='none';
+    document.getElementById('appContent').style.display='block';
+    initUI(); actualizarInfoModeloCache();
+    iniciarInactividad();
+  }
+}
+
+function actualizarUI_Perfil(){
+  const p = sesion.perfil;
+  const badge = document.getElementById('headerPerfilBadge');
+  const mapNombre = {admin:'Admin 👑', docente:'Docente', visualizador:'Solo lectura'};
+  const mapClass  = {admin:'hp-admin', docente:'hp-docente', visualizador:'hp-visualizador'};
+  badge.className = 'header-perfil '+(mapClass[p]||'hp-visualizador');
+  document.getElementById('hpNombre').textContent = mapNombre[p]||p;
+
+  // Bloquear tabs según perfil
+  const tabPersonas = document.getElementById('tab-personas');
+  const tabConfig   = document.getElementById('tab-config');
+  const btnReg      = document.getElementById('btnRegistrar');
+  const btnReset    = document.getElementById('btnResetLista');
+
+  if(p === 'visualizador'){
+    tabPersonas.classList.add('blocked');
+    tabConfig.classList.add('blocked');
+    if(btnReg) btnReg.style.display='none';
+    if(btnReset) btnReset.style.display='none';
+  } else if(p === 'docente'){
+    tabPersonas.classList.remove('blocked');
+    tabConfig.classList.add('blocked');
+    if(btnReg) btnReg.style.display='';
+    if(btnReset) btnReset.style.display='';
+  } else {
+    tabPersonas.classList.remove('blocked');
+    tabConfig.classList.remove('blocked');
+    if(btnReg) btnReg.style.display='';
+    if(btnReset) btnReset.style.display='';
+  }
+}
+
+function switchTabGuarded(id){
+  const p = sesion.perfil;
+  if(id === 'config' && p !== 'admin'){ toast('🔒 Solo el Admin puede acceder a Configuración'); return; }
+  if(id === 'personas' && p === 'visualizador'){ toast('🔒 Solo Docente o Admin pueden gestionar personas'); return; }
+  switchTab(id);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INACTIVIDAD — Bloqueo automático
+// ═══════════════════════════════════════════════════════════════
+function reiniciarInactividad(){
+  pararInactividad();
+  iniciarInactividad();
+}
+
+function iniciarInactividad(){
+  if(!sesion.perfil) return;
+  const ms = cfg.inactividad * 60 * 1000;
+  const bar = document.getElementById('inactividadBar');
+  const prog = document.getElementById('inactividadProg');
+  bar.style.display='block';
+  prog.style.transition='none';
+  prog.style.width='100%';
+
+  // Animar la barra reduciéndose
+  setTimeout(()=>{
+    prog.style.transition = `width ${ms}ms linear`;
+    prog.style.width='0%';
+  }, 100);
+
+  inactTimer = setTimeout(()=>{
+    toast('🔒 Sesión cerrada por inactividad');
+    if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; clearInterval(detectLoop); }
+    sesion={perfil:null,desde:null};
+    document.getElementById('appContent').style.display='none';
+    document.getElementById('pinScreen').style.display='flex';
+    pinInput=''; actualizarDotsPIN();
+    pararInactividad();
+  }, ms);
+}
+
+function pararInactividad(){
+  clearTimeout(inactTimer);
+  document.getElementById('inactividadBar').style.display='none';
+}
+
+// Reiniciar inactividad en cualquier interacción
+['click','touchstart','keydown','mousemove'].forEach(ev=>{
+  document.addEventListener(ev, ()=>{ if(sesion.perfil) reiniciarInactividad(); }, {passive:true});
+});
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL CAMBIAR PIN
+// ═══════════════════════════════════════════════════════════════
+function abrirModalCambiarPin(){ modalPinPerfil='admin'; _abrirModalPin('Cambiar PIN Admin','Verifica el PIN actual primero.'); }
+function abrirModalPinDocente(){ modalPinPerfil='docente'; _abrirModalPin('Configurar PIN Docente','Deja el campo "PIN actual" vacío si es la primera vez.'); }
+function abrirModalPinVisualizador(){ modalPinPerfil='visualizador'; _abrirModalPin('Configurar PIN Visualizador','Deja el campo "PIN actual" vacío si es la primera vez.'); }
+
+function _abrirModalPin(titulo, sub){
+  document.getElementById('modalPinTitulo').textContent='🔑 '+titulo;
+  document.getElementById('modalPinSub').textContent=sub;
+  ['pinActualInput','pinNuevoInput','pinConfInput'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cambiarPinError').textContent='';
+  document.getElementById('modalCambiarPin').classList.remove('hidden');
+}
+
+function guardarNuevoPin(){
+  const actual = document.getElementById('pinActualInput').value.trim();
+  const nuevo  = document.getElementById('pinNuevoInput').value.trim();
+  const conf   = document.getElementById('pinConfInput').value.trim();
+  const errEl  = document.getElementById('cambiarPinError');
+
+  if(nuevo.length !== 4 || !/^\d{4}$/.test(nuevo)){ errEl.textContent='❌ El PIN debe ser 4 dígitos'; return; }
+  if(nuevo !== conf){ errEl.textContent='❌ Los PINs nuevos no coinciden'; return; }
+
+  // Verificar PIN actual (solo para admin o si ya hay uno configurado)
+  const pinHashActual = modalPinPerfil==='admin'?sec.pinAdmin: modalPinPerfil==='docente'?sec.pinDocente:sec.pinVisualizador;
+  if(pinHashActual && actual.length > 0 && hashPin(actual) !== pinHashActual){
+    errEl.textContent='❌ PIN actual incorrecto'; return;
+  }
+  if(modalPinPerfil==='admin' && pinHashActual && actual.length===0){
+    errEl.textContent='❌ Ingresa el PIN actual'; return;
+  }
+
+  if(modalPinPerfil==='admin') sec.pinAdmin = hashPin(nuevo);
+  else if(modalPinPerfil==='docente') sec.pinDocente = hashPin(nuevo);
+  else sec.pinVisualizador = hashPin(nuevo);
+  saveSec();
+  cerrarModal('modalCambiarPin');
+  renderPerfilesConfig();
+  toast('✅ PIN '+(modalPinPerfil==='admin'?'Admin':modalPinPerfil==='docente'?'Docente':'Visualizador')+' actualizado');
+}
+
+function renderPerfilesConfig(){
+  const el = document.getElementById('perfilesLista');
+  if(!el) return;
+  const rows = [
+    {key:'admin', icon:'👑', label:'Administrador', pin: sec.pinAdmin, required:true},
+    {key:'docente', icon:'👨‍🏫', label:'Docente', pin: sec.pinDocente, required:false},
+    {key:'visualizador', icon:'👁', label:'Visualizador', pin: sec.pinVisualizador, required:false},
+  ];
+  el.innerHTML = rows.map(r=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:6px;border:1px solid var(--border)">
+      <span style="font-size:18px">${r.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${r.label}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.pin?'PIN configurado ✓':r.required?'⚠️ Requerido':'No configurado'}</div>
+      </div>
+      <span class="badge ${r.pin?'badge-g':'badge-r'}">${r.pin?'Activo':'Inactivo'}</span>
+    </div>`).join('');
+  document.getElementById('cfgPerfilActivo').textContent = sesion.perfil ? (sesion.perfil.charAt(0).toUpperCase()+sesion.perfil.slice(1)) : '—';
+  document.getElementById('cfgTiempoInact').textContent = cfg.inactividad + ' min';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════════════════════════════════
+function getAudioCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function sonarTono(frecs,duraciones,tipo='sine',vol=0.3){
+  if(!cfg.sonidos) return;
+  try{
+    const ctx=getAudioCtx(); let t=ctx.currentTime;
+    frecs.forEach((f,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.type=tipo; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+duraciones[i]); o.start(t); o.stop(t+duraciones[i]); t+=duraciones[i]*.8; });
+  }catch(e){}
+}
+function sonarExito(){ sonarTono([523,784],[.12,.2],'sine',.25); }
+function sonarTarde(){ sonarTono([440,330],[.15,.25],'sine',.22); }
+function sonarFallo(){ sonarTono([300,200],[.1,.18],'triangle',.2); }
+
+// ═══════════════════════════════════════════════════════════════
+// PUNTUALIDAD
+// ═══════════════════════════════════════════════════════════════
+function esTarde(d){ const dt=d?new Date(d):new Date(); const [hC,mC]=cfg.horaCorte.split(':').map(Number); return dt.getHours()>hC||(dt.getHours()===hC&&dt.getMinutes()>mC); }
+function formatHora(iso){ if(!iso)return''; return new Date(iso).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function formatFechaHora(iso){ if(!iso)return''; const d=new Date(iso); return d.toLocaleDateString('es-CO',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
+
+// ═══════════════════════════════════════════════════════════════
+// MARCAR PRESENTE / AUSENTES
+// ═══════════════════════════════════════════════════════════════
+function marcarPresente(nombre, autoMarcado=false){
+  if(!nombre) return;
+  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
+  const ya=appData.asistencia[todayKey][nombre];
+  if(ya&&(ya.estado==='P'||ya.estado==='T')){ if(autoMarcado) toast('ℹ️ '+nombre+' ya marcado'); return; }
+  const ahora=new Date(); const tarde=esTarde(ahora); const estado=tarde?'T':'P';
+  appData.asistencia[todayKey][nombre]={estado,hora:ahora.toISOString(),auto:autoMarcado};
+  if(appData.histFaltas[nombre]) appData.histFaltas[nombre]=appData.histFaltas[nombre].filter(d=>d!==todayKey);
+  save();
+  if(tarde){ sonarTarde(); toast('🕐 '+nombre+' — Tarde ('+formatHora(ahora.toISOString())+')'); }
+  else      { sonarExito(); toast('✅ '+nombre+' — A tiempo ('+formatHora(ahora.toISOString())+')'); }
+  renderLista();
+}
+
+function aplicarAusentes(){
+  if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
+  let count=0;
+  appData.personas.forEach(p=>{
+    const reg=appData.asistencia[todayKey][p.nombre];
+    if(!reg||reg.estado==='A'){
+      appData.asistencia[todayKey][p.nombre]={estado:'A',hora:new Date().toISOString(),auto:true};
+      if(!appData.histFaltas[p.nombre]) appData.histFaltas[p.nombre]=[];
+      if(!appData.histFaltas[p.nombre].includes(todayKey)) appData.histFaltas[p.nombre].push(todayKey);
+      count++;
+    }
+  });
+  save(); renderLista(); renderAlertas();
+  toast(count>0?'📋 '+count+' ausente'+(count>1?'s':'')+' aplicados':'✅ Lista completa');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INDEXEDDB CACHÉ
+// ═══════════════════════════════════════════════════════════════
+function openIDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open(IDB_NAME,1); r.onupgradeneeded=e=>e.target.result.createObjectStore(IDB_STORE); r.onsuccess=e=>res(e.target.result); r.onerror=()=>rej(r.error); }); }
+function idbGet(db,k){ return new Promise((r,j)=>{ const q=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get(k); q.onsuccess=()=>r(q.result); q.onerror=()=>j(q.error); }); }
+function idbSet(db,k,v){ return new Promise((r,j)=>{ const q=db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).put(v,k); q.onsuccess=()=>r(); q.onerror=()=>j(q.error); }); }
+function idbDel(db,k){ return new Promise((r,j)=>{ const q=db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).delete(k); q.onsuccess=()=>r(); q.onerror=()=>j(q.error); }); }
+
+async function verificarCache(){ try{ const db=await openIDB(); let n=0; for(const f of MODEL_FILES){ const c=await idbGet(db,MODEL_URL+'/'+f).catch(()=>null); if(c)n++; } db.close(); return{cached:n,total:MODEL_FILES.length}; }catch(e){ return{cached:0,total:MODEL_FILES.length}; } }
+async function limpiarCacheModelos(){ if(!confirm('¿Limpiar caché de modelos?'))return; try{ const db=await openIDB(); for(const f of MODEL_FILES) await idbDel(db,MODEL_URL+'/'+f).catch(()=>{}); db.close(); toast('✅ Caché limpiado'); actualizarInfoModeloCache(); }catch(e){toast('❌ Error');} }
+async function actualizarInfoModeloCache(){ const{cached,total}=await verificarCache(); const el=document.getElementById('modelStatusCard'); const badge=document.getElementById('modelCacheBadge'); if(!el)return; if(cached===total){ el.innerHTML=`<span style="color:var(--green)">✅ Modelos en caché</span><br>${cached}/${total} archivos · Sin internet`; if(badge){badge.textContent='⚡';badge.className='cache-badge';badge.style.display='inline-flex';} }else{ el.innerHTML=`<span style="color:var(--amber)">🌐 ${cached}/${total} en caché</span>`; } }
 
 // ═══════════════════════════════════════════════════════════════
 // CARGA DE MODELOS
 // ═══════════════════════════════════════════════════════════════
-function setProg(pct, msg) {
-  document.getElementById('progBar').style.width = pct+'%';
-  document.getElementById('loadStep').textContent = msg;
-}
+function setProg(p,m){ document.getElementById('progBar').style.width=p+'%'; document.getElementById('loadStep').textContent=m; }
 
-async function loadModels() {
-  try {
-    let db; try{ db=await openIDB(); }catch(e){ db=null; }
-
-    if(db) {
-      const {cached,total}=await verificarCache();
-      if(cached===total) document.getElementById('cacheMsg').style.display='block';
-
-      const origFetch = window.fetch.bind(window);
-      window.fetch = async (url, opts) => {
-        const u = url ? url.toString() : '';
-        if(u.startsWith(MODEL_URL)) {
-          const cached = await idbGet(db, u).catch(()=>null);
-          if(cached) return new Response(cached, {headers:{'Content-Type': u.endsWith('.json')?'application/json':'application/octet-stream'}});
-          const resp = await origFetch(url, opts);
-          if(resp.ok){ const buf=await resp.clone().arrayBuffer(); await idbSet(db,u,buf).catch(()=>{}); }
-          return resp;
-        }
-        return origFetch(url, opts);
-      };
+async function loadModels(){
+  try{
+    let db; try{db=await openIDB();}catch(e){db=null;}
+    if(db){ const{cached,total}=await verificarCache(); if(cached===total) document.getElementById('cacheMsg').style.display='block';
+      const oF=window.fetch.bind(window);
+      window.fetch=async(url,opts)=>{ const u=url?url.toString():''; if(u.startsWith(MODEL_URL)){ const c=await idbGet(db,u).catch(()=>null); if(c)return new Response(c,{headers:{'Content-Type':u.endsWith('.json')?'application/json':'application/octet-stream'}}); const r=await oF(url,opts); if(r.ok){const b=await r.clone().arrayBuffer();await idbSet(db,u,b).catch(()=>{});} return r; } return oF(url,opts); };
     }
-
-    setProg(5,  'Cargando detector de rostros...');
+    setProg(5,'Cargando detector de rostros...');
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    setProg(45, 'Cargando puntos faciales...');
+    setProg(45,'Cargando puntos faciales...');
     await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
-    setProg(80, 'Cargando reconocimiento facial...');
+    setProg(80,'Cargando reconocimiento...');
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
     if(db) db.close();
-
     setProg(100,'✅ Listo');
-    modelsLoaded = true;
+    modelsLoaded=true;
     await reconstruirMatcher();
     setTimeout(()=>{
       document.getElementById('loadingScreen').style.display='none';
       document.getElementById('appContent').style.display='block';
-      initUI(); actualizarInfoModeloCache();
-    }, 600);
-  } catch(e) {
-    setProg(0,'');
-    document.getElementById('progBar').style.background='var(--red)';
+      initUI(); actualizarInfoModeloCache(); iniciarInactividad();
+    },600);
+  }catch(e){
+    setProg(0,''); document.getElementById('progBar').style.background='var(--red)';
     document.getElementById('loadStep').textContent='❌ '+e.message;
-    const btn=document.createElement('button');
-    btn.textContent='🔄 Reintentar';
+    const btn=document.createElement('button'); btn.textContent='🔄 Reintentar';
     btn.style.cssText='margin-top:20px;padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer';
-    btn.onclick=()=>{ document.getElementById('progBar').style.background='var(--accent)'; loadModels(); };
+    btn.onclick=()=>{document.getElementById('progBar').style.background='var(--accent)';loadModels();};
     document.getElementById('loadingScreen').appendChild(btn);
   }
 }
 
-async function reconstruirMatcher() {
-  const con = appData.personas.filter(p=>p.descriptors&&p.descriptors.length>0);
-  if(!con.length){ faceMatcher=null; return; }
-  faceMatcher = new faceapi.FaceMatcher(
-    con.map(p=>new faceapi.LabeledFaceDescriptors(p.nombre, p.descriptors.map(d=>new Float32Array(Object.values(d))))),
-    0.5
-  );
+async function reconstruirMatcher(){
+  const con=appData.personas.filter(p=>p.descriptors&&p.descriptors.length>0);
+  if(!con.length){faceMatcher=null;return;}
+  faceMatcher=new faceapi.FaceMatcher(con.map(p=>new faceapi.LabeledFaceDescriptors(p.nombre,p.descriptors.map(d=>new Float32Array(Object.values(d))))),0.5);
 }
 
 // ═══════════════════════════════════════════════════════════════
 // CÁMARA
 // ═══════════════════════════════════════════════════════════════
-async function toggleCam() {
-  if(camStream) {
-    // CERRAR → aplicar ausentes
+async function toggleCam(){
+  if(camStream){
     camStream.getTracks().forEach(t=>t.stop()); camStream=null;
     clearInterval(detectLoop); detectLoop=null;
     document.getElementById('video').srcObject=null;
     document.getElementById('camOverlay').classList.remove('hidden');
     document.getElementById('btnCam').textContent='▶ Activar cámara y tomar lista';
+    document.getElementById('btnCam').style.background='';
     document.getElementById('reconResult').style.display='none';
     document.getElementById('autoBar').style.display='none';
     document.getElementById('sessionBanner').style.display='none';
     clearTimeout(confirmTimer); confirmando=null;
-    sessionActiva = false;
-    // Aplicar ausentes automáticamente
-    if(appData.personas.length > 0) {
-      setTimeout(()=>{ if(confirm('¿Cerrar lista y marcar como AUSENTES a todos los que no pasaron?')) aplicarAusentes(); }, 200);
-    }
+    if(appData.personas.length>0) setTimeout(()=>{ if(confirm('¿Cerrar lista y marcar AUSENTES a todos los que no pasaron?')) aplicarAusentes(); },200);
     return;
   }
-  try {
-    camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}}});
-    const vid = document.getElementById('video');
-    vid.srcObject = camStream;
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}}});
+    const vid=document.getElementById('video'); vid.srcObject=camStream;
     document.getElementById('camOverlay').classList.add('hidden');
     document.getElementById('btnCam').textContent='⏹ Cerrar lista';
     document.getElementById('btnCam').style.background='var(--red)';
     document.getElementById('autoBar').style.display='flex';
     document.getElementById('sessionBanner').style.display='flex';
-    sessionActiva = true;
-    vid.onloadedmetadata = () => {
-      const c=document.getElementById('canvas');
-      c.width=vid.videoWidth; c.height=vid.videoHeight;
-      detectLoop = setInterval(detectarRostro, 700);
-    };
-  } catch(e){ toast('❌ Sin acceso a cámara. Verifica permisos.'); }
+    vid.onloadedmetadata=()=>{ const c=document.getElementById('canvas'); c.width=vid.videoWidth; c.height=vid.videoHeight; detectLoop=setInterval(detectarRostro,700); };
+  }catch(e){ toast('❌ Sin acceso a cámara. Verifica permisos.'); }
 }
 
-async function flipCam() {
-  facing = facing==='user'?'environment':'user';
-  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+async function flipCam(){
+  facing=facing==='user'?'environment':'user';
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   clearInterval(detectLoop);
-  // re-abrir sin el flujo de ausentes
-  try {
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640}}});
-    document.getElementById('video').srcObject=camStream;
-    document.getElementById('video').onloadedmetadata=()=>{
-      const c=document.getElementById('canvas');
-      c.width=document.getElementById('video').videoWidth;
-      c.height=document.getElementById('video').videoHeight;
-      detectLoop=setInterval(detectarRostro,700);
-    };
-  } catch(e){ toast('❌ Error al cambiar cámara'); }
+  try{ camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640}}}); document.getElementById('video').srcObject=camStream; document.getElementById('video').onloadedmetadata=()=>{ const c=document.getElementById('canvas'); c.width=document.getElementById('video').videoWidth; c.height=document.getElementById('video').videoHeight; detectLoop=setInterval(detectarRostro,700); }; }catch(e){toast('❌ Error al cambiar cámara');}
 }
 
-// Flash visual en la cámara
-function flashCam(color) {
-  const f = document.getElementById('camFlash');
-  f.className='cam-flash '+color+' show';
-  setTimeout(()=>f.className='cam-flash '+color, 300);
-}
+function flashCam(color){ const f=document.getElementById('camFlash'); f.className='cam-flash '+color+' show'; setTimeout(()=>f.className='cam-flash '+color,300); }
+function actualizarAnillo(p){ document.getElementById('countCircle').style.strokeDashoffset=100-p*100; document.getElementById('countText').textContent=Math.ceil((1-p)*cfg.segConfirm); }
 
-// Anillo de cuenta regresiva
-function actualizarAnillo(progreso) { // 0..1
-  const offset = 100 - progreso*100;
-  document.getElementById('countCircle').style.strokeDashoffset = offset;
-  const seg = Math.ceil((1-progreso)*cfg.segConfirm);
-  document.getElementById('countText').textContent = seg;
-}
-
-async function detectarRostro() {
-  const vid=document.getElementById('video');
-  if(!vid.srcObject||vid.paused) return;
-  const opts=new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.5});
-  const det=await faceapi.detectSingleFace(vid,opts).withFaceLandmarks(true).withFaceDescriptor();
-  const c=document.getElementById('canvas');
-  const ctx=c.getContext('2d');
-  ctx.clearRect(0,0,c.width,c.height);
-
-  const autoDot  = document.getElementById('autoDot');
-  const autoText = document.getElementById('autoBarText');
-  const countWrap= document.getElementById('countWrap');
-  const res      = document.getElementById('reconResult');
-
-  if(!det){
-    res.style.display='none';
-    autoDot.className='auto-dot';
-    autoText.textContent='Buscando rostros...';
-    countWrap.style.display='none';
-    // Cancelar confirmación pendiente si no hay rostro
-    if(confirmando){ clearTimeout(confirmTimer); confirmando=null; }
-    return;
-  }
-
+async function detectarRostro(){
+  const vid=document.getElementById('video'); if(!vid.srcObject||vid.paused)return;
+  const det=await faceapi.detectSingleFace(vid,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.5})).withFaceLandmarks(true).withFaceDescriptor();
+  const c=document.getElementById('canvas'),ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
+  const autoDot=document.getElementById('autoDot'),autoText=document.getElementById('autoBarText'),countWrap=document.getElementById('countWrap'),res=document.getElementById('reconResult');
+  if(!det){ res.style.display='none'; autoDot.className='auto-dot'; autoText.textContent='Buscando rostros...'; countWrap.style.display='none'; if(confirmando){clearTimeout(confirmTimer);confirmando=null;} return; }
   autoDot.className='auto-dot scanning';
-  const box=det.detection.box;
-  const sx=c.width/vid.videoWidth, sy=c.height/vid.videoHeight;
-
-  if(!faceMatcher){
-    document.getElementById('noPersonasAlert').style.display='block';
-    res.style.display='none';
-    ctx.strokeStyle='#4f8ef7'; ctx.lineWidth=2;
-    ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
-    return;
-  }
+  const box=det.detection.box,sx=c.width/vid.videoWidth,sy=c.height/vid.videoHeight;
+  if(!faceMatcher){ document.getElementById('noPersonasAlert').style.display='block'; res.style.display='none'; ctx.strokeStyle='#4f8ef7';ctx.lineWidth=2;ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy); return; }
   document.getElementById('noPersonasAlert').style.display='none';
-
-  const match=faceMatcher.findBestMatch(det.descriptor);
-  const conf=Math.round((1-match.distance)*100);
-
+  const match=faceMatcher.findBestMatch(det.descriptor),conf=Math.round((1-match.distance)*100);
   res.style.display='block';
-
-  if(match.label==='unknown' || conf < cfg.confianza) {
-    // Desconocido o confianza baja
-    document.getElementById('reconIcon').textContent='❓';
-    document.getElementById('reconName').textContent='Desconocido';
-    document.getElementById('reconGrado').textContent='';
-    document.getElementById('reconSub').textContent='Confianza insuficiente ('+conf+'% < '+cfg.confianza+'% requerido)';
-    document.getElementById('reconAutoMsg').style.display='none';
-    res.className='recono-box unknown';
-    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2;
-    ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
-    countWrap.style.display='none';
-    autoText.textContent='Rostro no reconocido';
-    autoDot.className='auto-dot';
-    // Si estaba confirmando a alguien diferente, cancelar
-    if(confirmando && confirmando.nombre !== '__unknown__'){
-      clearTimeout(confirmTimer); confirmando=null;
-    }
-    // Sonido de fallo (solo una vez por detección nueva)
-    if(!confirmando || confirmando.nombre!=='__unknown__'){
-      sonarFallo();
-      flashCam('red');
-      confirmando={nombre:'__unknown__', inicio:Date.now()};
-    }
+  if(match.label==='unknown'||conf<cfg.confianza){
+    document.getElementById('reconIcon').textContent='❓'; document.getElementById('reconName').textContent='Desconocido'; document.getElementById('reconGrado').textContent=''; document.getElementById('reconSub').textContent='Confianza: '+conf+'% (mín. '+cfg.confianza+'%)'; document.getElementById('reconAutoMsg').style.display='none';
+    res.className='recono-box unknown'; ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
+    countWrap.style.display='none'; autoText.textContent='Rostro no reconocido'; autoDot.className='auto-dot';
+    if(!confirmando||confirmando.nombre!=='__unknown__'){sonarFallo();flashCam('red');confirmando={nombre:'__unknown__',inicio:Date.now()};}
     return;
   }
-
-  // Rostro reconocido con confianza suficiente
   const p=appData.personas.find(x=>x.nombre===match.label);
-  const reg = appData.asistencia[todayKey]?.[match.label];
-  const yaMarcado = reg && (reg.estado==='P'||reg.estado==='T');
-
+  const reg=appData.asistencia[todayKey]?.[match.label],yaMarcado=reg&&(reg.estado==='P'||reg.estado==='T');
   document.getElementById('reconIcon').textContent=conf>80?'✅':'🔍';
   document.getElementById('reconName').textContent=match.label;
   document.getElementById('reconGrado').textContent=p?'📚 Grado '+p.grado:'';
-  document.getElementById('reconSub').textContent=(p?p.tipoDoc+' '+p.numDoc+' · '+(p.rol||''):'')+'\nConfianza: '+conf+'%';
+  document.getElementById('reconSub').textContent=(p?p.tipoDoc+' '+p.numDoc+' · '+(p.rol||'')+'\n':'')+' Confianza: '+conf+'%';
   res.className='recono-box match';
-
-  ctx.strokeStyle=yaMarcado?'#38bdf8':'#22c55e'; ctx.lineWidth=3;
-  ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
-  ctx.fillStyle=yaMarcado?'rgba(56,189,248,.8)':'rgba(34,197,94,.85)';
-  ctx.fillRect(box.x*sx,box.y*sy-22,box.width*sx,22);
-  ctx.fillStyle='#fff'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(match.label+' ('+conf+'%)',(box.x+box.width/2)*sx,(box.y-6)*sy);
-
-  const autoMsg = document.getElementById('reconAutoMsg');
-
-  if(yaMarcado) {
-    const tipoMarca = reg.estado==='T'?'Tarde':'A tiempo';
-    autoMsg.textContent='✓ Ya marcado — '+tipoMarca+' a las '+formatHora(reg.hora);
-    autoMsg.className='recono-auto ok';
-    autoMsg.style.display='block';
-    countWrap.style.display='none';
-    autoText.textContent='✓ '+match.label+' ya presente';
-    autoDot.className='auto-dot ok';
-    if(confirmando) { clearTimeout(confirmTimer); confirmando=null; }
-    return;
-  }
-
-  // Iniciar o continuar confirmación automática
+  ctx.strokeStyle=yaMarcado?'#38bdf8':'#22c55e';ctx.lineWidth=3;ctx.strokeRect(box.x*sx,box.y*sy,box.width*sx,box.height*sy);
+  ctx.fillStyle=yaMarcado?'rgba(56,189,248,.8)':'rgba(34,197,94,.85)';ctx.fillRect(box.x*sx,box.y*sy-22,box.width*sx,22);
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(match.label+' ('+conf+'%)',(box.x+box.width/2)*sx,(box.y-6)*sy);
+  const autoMsg=document.getElementById('reconAutoMsg');
+  if(yaMarcado){ autoMsg.textContent='✓ Ya marcado — '+(reg.estado==='T'?'Tarde':'A tiempo')+' '+formatHora(reg.hora); autoMsg.className='recono-auto ok'; autoMsg.style.display='block'; countWrap.style.display='none'; autoText.textContent='✓ '+match.label+' ya presente'; autoDot.className='auto-dot ok'; if(confirmando){clearTimeout(confirmTimer);confirmando=null;} return; }
   autoText.textContent='Reconocido: '+match.label;
-
-  if(!confirmando || confirmando.nombre !== match.label) {
-    // Nueva detección — iniciar cuenta regresiva
-    clearTimeout(confirmTimer);
-    confirmando = {nombre: match.label, inicio: Date.now()};
-    countWrap.style.display='flex';
-    actualizarAnillo(0);
-
-    // Actualizar el anillo cada 100ms
-    const dur = cfg.segConfirm * 1000;
-    const startT = Date.now();
-    const anilloInterval = setInterval(()=>{
-      if(!confirmando || confirmando.nombre!==match.label){ clearInterval(anilloInterval); return; }
-      const elapsed = Date.now()-startT;
-      actualizarAnillo(Math.min(elapsed/dur, 1));
-      if(elapsed>=dur) clearInterval(anilloInterval);
-    }, 100);
-
-    confirmTimer = setTimeout(()=>{
-      clearInterval(anilloInterval);
-      if(confirmando && confirmando.nombre===match.label) {
-        flashCam('green');
-        marcarPresente(match.label, true);
-        confirmando=null;
-        countWrap.style.display='none';
-        autoDot.className='auto-dot ok';
-      }
-    }, dur);
+  if(!confirmando||confirmando.nombre!==match.label){
+    clearTimeout(confirmTimer); confirmando={nombre:match.label,inicio:Date.now()}; countWrap.style.display='flex'; actualizarAnillo(0);
+    const dur=cfg.segConfirm*1000,startT=Date.now();
+    const ai=setInterval(()=>{ if(!confirmando||confirmando.nombre!==match.label){clearInterval(ai);return;} const el=Date.now()-startT; actualizarAnillo(Math.min(el/dur,1)); if(el>=dur)clearInterval(ai); },100);
+    confirmTimer=setTimeout(()=>{ clearInterval(ai); if(confirmando&&confirmando.nombre===match.label){flashCam('green');marcarPresente(match.label,true);confirmando=null;countWrap.style.display='none';autoDot.className='auto-dot ok';} },dur);
   }
-
-  const elapsed = Date.now()-(confirmando?.inicio||Date.now());
-  const seg = Math.max(0, Math.ceil((cfg.segConfirm*1000-elapsed)/1000));
-  autoMsg.textContent='⏳ Marcando en '+seg+'s...';
-  autoMsg.className='recono-auto wait';
-  autoMsg.style.display='block';
+  const el2=Date.now()-(confirmando?.inicio||Date.now()),seg=Math.max(0,Math.ceil((cfg.segConfirm*1000-el2)/1000));
+  autoMsg.textContent='⏳ Marcando en '+seg+'s...'; autoMsg.className='recono-auto wait'; autoMsg.style.display='block';
 }
-
-function ignorarDet(){ document.getElementById('reconResult').style.display='none'; }
 
 // ═══════════════════════════════════════════════════════════════
 // PERSONAS
 // ═══════════════════════════════════════════════════════════════
-function gradosUnicos(){
-  return [...new Set(appData.personas.map(p=>p.grado))].filter(Boolean).sort();
-}
-function renderFiltrosGrado(id, activo, fn){
-  const chips=['<button class="chip '+(activo==='todos'?'active':'')+'" onclick="'+fn+'(\'todos\',this)">Todos</button>'];
-  gradosUnicos().forEach(g=>chips.push('<button class="chip '+(activo===g?'active':'')+'" onclick="'+fn+'(\''+g+'\',this)">'+g+'</button>'));
-  document.getElementById(id).innerHTML=chips.join('');
-}
+function gradosUnicos(){ return[...new Set(appData.personas.map(p=>p.grado))].filter(Boolean).sort(); }
+function renderFiltrosGrado(id,activo,fn){ const chips=['<button class="chip '+(activo==='todos'?'active':'')+'" onclick="'+fn+'(\'todos\',this)">Todos</button>']; gradosUnicos().forEach(g=>chips.push('<button class="chip '+(activo===g?'active':'')+'" onclick="'+fn+'(\''+g+'\',this)">'+g+'</button>')); document.getElementById(id).innerHTML=chips.join(''); }
 function setFiltroGrado(g,el){ filtroGrado=g; document.querySelectorAll('#filtrosGrado .chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderPersonas(); }
 function setFiltroLista(g,el){ filtroLista=g; document.querySelectorAll('#filtrosListaGrado .chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderLista(); }
 
 function renderPersonas(){
   renderFiltrosGrado('filtrosGrado',filtroGrado,'setFiltroGrado');
-  const c=document.getElementById('listaPersonas');
-  const msg=document.getElementById('sinPersonasMsg');
+  const c=document.getElementById('listaPersonas'),msg=document.getElementById('sinPersonasMsg');
   const lista=filtroGrado==='todos'?appData.personas:appData.personas.filter(p=>p.grado===filtroGrado);
-  if(!appData.personas.length){ c.innerHTML=''; msg.style.display='block'; return; }
-  msg.style.display='none';
-  if(!lista.length){ c.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">Sin personas en este grado</div>'; return; }
-  c.innerHTML=lista.map(p=>{
-    const i=appData.personas.indexOf(p);
-    const n=(p.descriptors||[]).length;
-    return `<div class="p-item">
-      <div class="av">${iniciales(p.nombre)}</div>
-      <div class="p-info">
-        <div class="p-name">${p.nombre}</div>
-        <div class="p-sub">Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc} · ${p.rol||''}</div>
-        <div class="p-sub">${n} foto${n!==1?'s':''} · <span style="color:${n>=3?'var(--green)':'var(--amber)'}">${n>=3?'✓ Listo':'⚠ Faltan fotos'}</span></div>
-      </div>
-      <div class="p-actions">
-        <button class="btn btn-outline btn-sm" onclick="agregarMasFotos(${i})">📸</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarPersona(${i})">🗑</button>
-      </div>
-    </div>`;
+  if(!appData.personas.length){c.innerHTML='';msg.style.display='block';return;} msg.style.display='none';
+  if(!lista.length){c.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">Sin personas en este grado</div>';return;}
+  const puedeEditar = esDocente();
+  c.innerHTML=lista.map(p=>{ const i=appData.personas.indexOf(p),n=(p.descriptors||[]).length;
+    return`<div class="p-item"><div class="av">${iniciales(p.nombre)}</div><div class="p-info"><div class="p-name">${p.nombre}</div><div class="p-sub">Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc} · ${p.rol||''}</div><div class="p-sub">${n} foto${n!==1?'s':''} · <span style="color:${n>=3?'var(--green)':'var(--amber)'}">${n>=3?'✓ Listo':'⚠ Faltan fotos'}</span></div></div>${puedeEditar?`<div class="p-actions"><button class="btn btn-outline btn-sm" onclick="agregarMasFotos(${i})">📸</button><button class="btn btn-danger btn-sm" onclick="eliminarPersona(${i})">🗑</button></div>`:'<span style="font-size:10px;color:var(--text3)">👁 Solo lectura</span>'}</div>`;
   }).join('');
 }
 
 function abrirModalPersona(){
+  if(!esDocente()){toast('🔒 Sin permisos');return;}
   ['inNombre','inNumDoc'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('inGrado').value='Primero';
-  document.getElementById('inRol').value='Estudiante';
-  document.getElementById('inTipoDoc').value='TI';
+  document.getElementById('inGrado').value='Primero'; document.getElementById('inRol').value='Estudiante'; document.getElementById('inTipoDoc').value='TI';
   document.getElementById('modalPersona').classList.remove('hidden');
   setTimeout(()=>document.getElementById('inNombre').focus(),300);
 }
 function cerrarModal(id){ document.getElementById(id).classList.add('hidden'); }
-
 function guardarPersona(){
-  const nombre=document.getElementById('inNombre').value.trim();
-  const numDoc=document.getElementById('inNumDoc').value.trim();
-  const tipoDoc=document.getElementById('inTipoDoc').value;
-  const grado=document.getElementById('inGrado').value;
-  const rol=document.getElementById('inRol').value;
-  if(!nombre){ toast('⚠️ Escribe el nombre'); return; }
-  if(!numDoc){ toast('⚠️ Escribe el número de documento'); return; }
-  if(appData.personas.find(p=>p.numDoc===numDoc&&p.tipoDoc===tipoDoc)){ toast('⚠️ Ya existe ese documento'); return; }
-  appData.personas.push({nombre,numDoc,tipoDoc,grado,rol,descriptors:[]});
-  save(); cerrarModal('modalPersona');
-  renderPersonas();
+  const nombre=document.getElementById('inNombre').value.trim(),numDoc=document.getElementById('inNumDoc').value.trim(),tipoDoc=document.getElementById('inTipoDoc').value,grado=document.getElementById('inGrado').value,rol=document.getElementById('inRol').value;
+  if(!nombre){toast('⚠️ Escribe el nombre');return;} if(!numDoc){toast('⚠️ Escribe el número de documento');return;}
+  if(appData.personas.find(p=>p.numDoc===numDoc&&p.tipoDoc===tipoDoc)){toast('⚠️ Ya existe ese documento');return;}
+  appData.personas.push({nombre,numDoc,tipoDoc,grado,rol,descriptors:[]}); save(); cerrarModal('modalPersona'); renderPersonas();
   setTimeout(()=>abrirCaptura(appData.personas.length-1),300);
 }
-function eliminarPersona(i){
-  if(!confirm('¿Eliminar a '+appData.personas[i].nombre+'?')) return;
-  appData.personas.splice(i,1); save(); reconstruirMatcher(); renderPersonas(); toast('Eliminado');
-}
+function eliminarPersona(i){ if(!esDocente()){toast('🔒 Sin permisos');return;} if(!confirm('¿Eliminar a '+appData.personas[i].nombre+'?'))return; appData.personas.splice(i,1); save(); reconstruirMatcher(); renderPersonas(); toast('Eliminado'); }
 function agregarMasFotos(i){ abrirCaptura(i); }
 
 // ═══════════════════════════════════════════════════════════════
 // CAPTURA
 // ═══════════════════════════════════════════════════════════════
-async function abrirCaptura(idx){
-  currentPersonaIdx=idx;
-  fotosCapturadas=[...(appData.personas[idx].descriptors||[])];
-  const p=appData.personas[idx];
-  document.getElementById('captNombre').textContent=p.nombre+' · Grado '+p.grado;
-  document.getElementById('modalFotos').classList.remove('hidden');
-  document.getElementById('captStatus').textContent='';
-  document.getElementById('btnEntrenar').disabled=fotosCapturadas.length<3;
-  actualizarDots();
-  try {
-    camStream2=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2,width:{ideal:640}}});
-    document.getElementById('video2').srcObject=camStream2;
-  } catch(e){ toast('❌ Sin acceso a cámara'); }
-}
-function cerrarModalFotos(){
-  if(camStream2){ camStream2.getTracks().forEach(t=>t.stop()); camStream2=null; }
-  document.getElementById('video2').srcObject=null;
-  cerrarModal('modalFotos');
-}
-async function flipCam2(){
-  facing2=facing2==='user'?'environment':'user';
-  if(camStream2) camStream2.getTracks().forEach(t=>t.stop());
-  camStream2=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2}});
-  document.getElementById('video2').srcObject=camStream2;
-}
-async function capturarFoto(){
-  const btn=document.getElementById('btnCapturar');
-  const st=document.getElementById('captStatus');
-  btn.disabled=true; btn.textContent='⏳ Procesando...';
-  try {
-    const det=await faceapi.detectSingleFace(document.getElementById('video2'),
-      new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.4})).withFaceLandmarks(true).withFaceDescriptor();
-    if(!det){ st.textContent='⚠️ No se detectó rostro'; st.style.color='var(--amber)'; }
-    else {
-      fotosCapturadas.push(Object.assign({},det.descriptor));
-      actualizarDots();
-      document.getElementById('btnEntrenar').disabled=fotosCapturadas.length<3;
-      const falta=Math.max(0,5-fotosCapturadas.length);
-      st.textContent=fotosCapturadas.length>=5?'✅ '+fotosCapturadas.length+' vectores — ¡Listo!'
-        :'✅ Vector '+fotosCapturadas.length+'. Captura '+falta+' más.';
-      st.style.color='var(--green)';
-    }
-  } catch(e){ st.textContent='❌ '+e.message; st.style.color='var(--red)'; }
-  btn.disabled=false; btn.textContent='📸 Capturar';
-}
-function actualizarDots(){
-  const t=Math.max(fotosCapturadas.length,8);
-  document.getElementById('fotoDots').innerHTML=
-    Array.from({length:t},(_,i)=>`<div class="dot ${i<fotosCapturadas.length?'ok':'empty'}">${i<fotosCapturadas.length?'✓':i+1}</div>`).join('');
-}
-async function entrenarYCerrar(){
-  if(fotosCapturadas.length<3){ toast('Mínimo 3 fotos'); return; }
-  document.getElementById('captStatus').textContent='⚙️ Entrenando...';
-  document.getElementById('btnEntrenar').disabled=true;
-  appData.personas[currentPersonaIdx].descriptors=fotosCapturadas;
-  save(); await reconstruirMatcher();
-  const nombre=appData.personas[currentPersonaIdx].nombre;
-  cerrarModalFotos(); renderPersonas();
-  toast('✅ '+nombre+' — '+fotosCapturadas.length+' vectores guardados');
-}
+async function abrirCaptura(idx){ currentPersonaIdx=idx; fotosCapturadas=[...(appData.personas[idx].descriptors||[])]; const p=appData.personas[idx]; document.getElementById('captNombre').textContent=p.nombre+' · Grado '+p.grado; document.getElementById('modalFotos').classList.remove('hidden'); document.getElementById('captStatus').textContent=''; document.getElementById('btnEntrenar').disabled=fotosCapturadas.length<3; actualizarDots(); try{ camStream2=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2,width:{ideal:640}}}); document.getElementById('video2').srcObject=camStream2; }catch(e){toast('❌ Sin acceso a cámara');} }
+function cerrarModalFotos(){ if(camStream2){camStream2.getTracks().forEach(t=>t.stop());camStream2=null;} document.getElementById('video2').srcObject=null; cerrarModal('modalFotos'); }
+async function flipCam2(){ facing2=facing2==='user'?'environment':'user'; if(camStream2)camStream2.getTracks().forEach(t=>t.stop()); camStream2=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing2}}); document.getElementById('video2').srcObject=camStream2; }
+async function capturarFoto(){ const btn=document.getElementById('btnCapturar'),st=document.getElementById('captStatus'); btn.disabled=true;btn.textContent='⏳ Procesando...'; try{ const det=await faceapi.detectSingleFace(document.getElementById('video2'),new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:0.4})).withFaceLandmarks(true).withFaceDescriptor(); if(!det){st.textContent='⚠️ No se detectó rostro';st.style.color='var(--amber)';}else{fotosCapturadas.push(Object.assign({},det.descriptor));actualizarDots();document.getElementById('btnEntrenar').disabled=fotosCapturadas.length<3;const f=Math.max(0,5-fotosCapturadas.length);st.textContent=fotosCapturadas.length>=5?'✅ '+fotosCapturadas.length+' vectores':'✅ Vector '+fotosCapturadas.length+'. Captura '+f+' más.';st.style.color='var(--green)';} }catch(e){st.textContent='❌ '+e.message;st.style.color='var(--red)';}btn.disabled=false;btn.textContent='📸 Capturar'; }
+function actualizarDots(){ const t=Math.max(fotosCapturadas.length,8); document.getElementById('fotoDots').innerHTML=Array.from({length:t},(_,i)=>`<div class="dot ${i<fotosCapturadas.length?'ok':'empty'}">${i<fotosCapturadas.length?'✓':i+1}</div>`).join(''); }
+async function entrenarYCerrar(){ if(fotosCapturadas.length<3){toast('Mínimo 3 fotos');return;} document.getElementById('captStatus').textContent='⚙️ Entrenando...'; document.getElementById('btnEntrenar').disabled=true; appData.personas[currentPersonaIdx].descriptors=fotosCapturadas; save(); await reconstruirMatcher(); const n=appData.personas[currentPersonaIdx].nombre; cerrarModalFotos();renderPersonas(); toast('✅ '+n+' — '+fotosCapturadas.length+' vectores'); }
 
 // ═══════════════════════════════════════════════════════════════
-// LISTA DE ASISTENCIA
+// LISTA
 // ═══════════════════════════════════════════════════════════════
 function renderLista(){
   renderFiltrosGrado('filtrosListaGrado',filtroLista,'setFiltroLista');
-  const reg=appData.asistencia[todayKey]||{};
-  const todas=appData.personas;
-  const filtradas=filtroLista==='todos'?todas:todas.filter(p=>p.grado===filtroLista);
-  let pres=0, tard=0, aus=0;
-  filtradas.forEach(p=>{
-    const r=reg[p.nombre];
-    if(r&&r.estado==='P') pres++;
-    else if(r&&r.estado==='T') tard++;
-    else aus++;
-  });
-  document.getElementById('stP').textContent=pres;
-  document.getElementById('stT').textContent=tard;
-  document.getElementById('stA').textContent=aus;
-
+  const reg=appData.asistencia[todayKey]||{},todas=appData.personas,filtradas=filtroLista==='todos'?todas:todas.filter(p=>p.grado===filtroLista);
+  let pres=0,tard=0,aus=0;
+  filtradas.forEach(p=>{ const r=reg[p.nombre]; if(r&&r.estado==='P')pres++; else if(r&&r.estado==='T')tard++; else aus++; });
+  document.getElementById('stP').textContent=pres; document.getElementById('stT').textContent=tard; document.getElementById('stA').textContent=aus;
   const c=document.getElementById('listaAsistencia');
-  if(!todas.length){ c.innerHTML='<p style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Sin personas registradas</p>'; return; }
-  if(!filtradas.length){ c.innerHTML='<p style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Sin personas en este grado</p>'; return; }
-
-  c.innerHTML=filtradas.map(p=>{
-    const r=reg[p.nombre];
-    const est=r?r.estado:'A';
-    const hora=r?r.hora:null;
-    const auto=r?r.auto:false;
-    const f=(appData.histFaltas[p.nombre]||[]).length;
-    let clase='ausente', badge='', badgePunct='';
-    if(est==='P'){ clase='presente'; badge='<span class="badge badge-g">✓ Presente</span>'; badgePunct='<span class="badge badge-g" style="font-size:9px">A tiempo</span>'; }
-    else if(est==='T'){ clase='tarde'; badge='<span class="badge badge-a">⏰ Tarde</span>'; badgePunct='<span class="badge badge-a" style="font-size:9px">Tardanza</span>'; }
-    else { badge='<span class="badge badge-r">✗ Ausente</span>'; }
-
-    return `<div class="a-item ${clase}" onclick="toggleAsist('${p.nombre}')">
-      <div class="av" style="width:36px;height:36px;font-size:12px">${iniciales(p.nombre)}</div>
-      <div style="flex:1;min-width:0">
-        <div class="a-name">${p.nombre}</div>
-        <div class="a-sub">Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}${f?' · '+f+' falta'+(f>1?'s':'')+(f>=3?' ⚠️':''):''}</div>
-        ${hora?`<div class="a-time">${auto?'🤖 Auto':'👆 Manual'} · ${formatFechaHora(hora)} ${badgePunct}</div>`:''}
-      </div>
-      ${badge}
-    </div>`;
+  if(!todas.length){c.innerHTML='<p style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Sin personas</p>';return;}
+  const puedeEditar = esDocente();
+  c.innerHTML=filtradas.map(p=>{ const r=reg[p.nombre],est=r?r.estado:'A',hora=r?r.hora:null,auto=r?r.auto:false,f=(appData.histFaltas[p.nombre]||[]).length;
+    let clase='ausente',badge='',bp='';
+    if(est==='P'){clase='presente';badge='<span class="badge badge-g">✓ Presente</span>';bp='<span class="badge badge-g" style="font-size:9px">A tiempo</span>';}
+    else if(est==='T'){clase='tarde';badge='<span class="badge badge-a">⏰ Tarde</span>';bp='<span class="badge badge-a" style="font-size:9px">Tardanza</span>';}
+    else{badge='<span class="badge badge-r">✗ Ausente</span>';}
+    return`<div class="a-item ${clase}${puedeEditar?' clickable':''}" ${puedeEditar?`onclick="toggleAsist('${p.nombre}')"`:''}><div class="av" style="width:36px;height:36px;font-size:12px">${iniciales(p.nombre)}</div><div style="flex:1;min-width:0"><div class="a-name">${p.nombre}</div><div style="font-size:10px;color:var(--text3)">Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}${f?' · '+f+' falta'+(f>1?'s':'')+(f>=3?' ⚠️':''):''}</div>${hora?`<div class="a-time">${auto?'🤖':'👆'} ${formatFechaHora(hora)} ${bp}</div>`:''}</div>${badge}</div>`;
   }).join('');
 }
 
 function toggleAsist(nombre){
+  if(!esDocente()){toast('🔒 Sin permisos para editar');return;}
   if(!appData.asistencia[todayKey]) appData.asistencia[todayKey]={};
-  const r=appData.asistencia[todayKey][nombre];
-  const actual=r?r.estado:'A';
-  // Ciclar: A → P → T → A
-  const siguiente = actual==='A'?'P': actual==='P'?'T':'A';
-  if(siguiente==='A'){
-    appData.asistencia[todayKey][nombre]={estado:'A',hora:new Date().toISOString(),auto:false};
-    if(!appData.histFaltas[nombre]) appData.histFaltas[nombre]=[];
-    if(!appData.histFaltas[nombre].includes(todayKey)) appData.histFaltas[nombre].push(todayKey);
-  } else {
-    appData.asistencia[todayKey][nombre]={estado:siguiente,hora:new Date().toISOString(),auto:false};
-    if(appData.histFaltas[nombre]) appData.histFaltas[nombre]=appData.histFaltas[nombre].filter(d=>d!==todayKey);
-  }
-  save(); renderLista(); renderAlertas();
+  const r=appData.asistencia[todayKey][nombre],actual=r?r.estado:'A',siguiente=actual==='A'?'P':actual==='P'?'T':'A';
+  if(siguiente==='A'){ appData.asistencia[todayKey][nombre]={estado:'A',hora:new Date().toISOString(),auto:false}; if(!appData.histFaltas[nombre])appData.histFaltas[nombre]=[]; if(!appData.histFaltas[nombre].includes(todayKey))appData.histFaltas[nombre].push(todayKey); }
+  else{ appData.asistencia[todayKey][nombre]={estado:siguiente,hora:new Date().toISOString(),auto:false}; if(appData.histFaltas[nombre])appData.histFaltas[nombre]=appData.histFaltas[nombre].filter(d=>d!==todayKey); }
+  save();renderLista();renderAlertas();
 }
 
-function resetearLista(){
-  if(!confirm('¿Resetear toda la lista de hoy? Se borrarán presencias y ausencias del día.')) return;
-  delete appData.asistencia[todayKey];
-  appData.personas.forEach(p=>{
-    if(appData.histFaltas[p.nombre]) appData.histFaltas[p.nombre]=appData.histFaltas[p.nombre].filter(d=>d!==todayKey);
-  });
-  save(); renderLista(); renderAlertas(); toast('Lista reseteada');
-}
+function resetearLista(){ if(!esDocente()){toast('🔒 Sin permisos');return;} if(!confirm('¿Resetear lista de hoy?'))return; delete appData.asistencia[todayKey]; appData.personas.forEach(p=>{if(appData.histFaltas[p.nombre])appData.histFaltas[p.nombre]=appData.histFaltas[p.nombre].filter(d=>d!==todayKey);}); save();renderLista();renderAlertas();toast('Lista reseteada'); }
 
-function exportarCSV(){
-  const reg=appData.asistencia[todayKey]||{};
-  const lineas=['Nombre,Grado,Tipo Doc,Número Doc,Rol,Estado,Puntualidad,Hora marcación,Automático,Faltas acumuladas'];
-  const filtradas=filtroLista==='todos'?appData.personas:appData.personas.filter(p=>p.grado===filtroLista);
-  filtradas.forEach(p=>{
-    const r=reg[p.nombre];
-    const est=r?r.estado:'A';
-    const estLabel=est==='P'?'Presente':est==='T'?'Tarde':'Ausente';
-    const punct=est==='P'?'A tiempo':est==='T'?'Tardanza':'—';
-    const hora=r&&r.hora?formatFechaHora(r.hora):'—';
-    const auto=r?r.auto?'Sí':'No':'—';
-    const f=(appData.histFaltas[p.nombre]||[]).length;
-    lineas.push(`"${p.nombre}",${p.grado||''},${p.tipoDoc||''},${p.numDoc||''},${p.rol||''},${estLabel},${punct},${hora},${auto},${f}`);
-  });
-  const blob=new Blob(['\uFEFF'+lineas.join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='asistencia_'+cfg.colegio.replace(/\s/g,'_')+'_'+todayKey+'.csv'; a.click();
-}
+function exportarCSV(){ const reg=appData.asistencia[todayKey]||{},lineas=['Nombre,Grado,Tipo Doc,Número Doc,Rol,Estado,Puntualidad,Hora,Automático,Faltas']; (filtroLista==='todos'?appData.personas:appData.personas.filter(p=>p.grado===filtroLista)).forEach(p=>{ const r=reg[p.nombre],est=r?r.estado:'A',eL=est==='P'?'Presente':est==='T'?'Tarde':'Ausente',pu=est==='P'?'A tiempo':est==='T'?'Tardanza':'—',h=r&&r.hora?formatFechaHora(r.hora):'—',au=r?r.auto?'Sí':'No':'—',f=(appData.histFaltas[p.nombre]||[]).length; lineas.push(`"${p.nombre}",${p.grado||''},${p.tipoDoc||''},${p.numDoc||''},${p.rol||''},${eL},${pu},${h},${au},${f}`); }); const b=new Blob(['\uFEFF'+lineas.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='asistencia_'+cfg.colegio.replace(/\s/g,'_')+'_'+todayKey+'.csv';a.click(); }
 
 // ═══════════════════════════════════════════════════════════════
 // ALERTAS
 // ═══════════════════════════════════════════════════════════════
-function renderAlertas(){
-  const c=document.getElementById('alertasContainer');
-  const ahora=new Date(); ahora.setHours(0,0,0,0);
-  let html='', hay=false;
-  const personas=[...appData.personas].sort((a,b)=>{
-    const fa=(appData.histFaltas[a.nombre]||[]).filter(d=>(ahora-new Date(d))/86400000<=7).length;
-    const fb=(appData.histFaltas[b.nombre]||[]).filter(d=>(ahora-new Date(d))/86400000<=7).length;
-    return fb-fa;
-  });
-  personas.forEach(p=>{
-    const fs=appData.histFaltas[p.nombre]||[];
-    const rec=fs.filter(d=>(ahora-new Date(d))/86400000<=7);
-    const total=fs.length;
-    if(rec.length>=3){
-      hay=true;
-      html+=`<div class="alert alert-d"><div class="a-title">🚨 ${p.nombre}</div>
-        <div>Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}<br>${rec.length} faltas en 7 días · ${total} total</div>
-        <button onclick="enviarWA('${p.nombre}','${p.grado}','${p.tipoDoc}','${p.numDoc}',${rec.length},'coordinacion')" style="margin-top:10px;padding:8px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;width:100%;font-weight:600">📲 Notificar Coordinación por WhatsApp</button></div>`;
-    } else if(rec.length===2){
-      hay=true;
-      html+=`<div class="alert alert-w"><div class="a-title">⚠️ ${p.nombre}</div>
-        <div>Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}<br>2 faltas recientes. Una más activa alerta.</div>
-        <button onclick="enviarWA('${p.nombre}','${p.grado}','${p.tipoDoc}','${p.numDoc}',${rec.length},'acudiente')" style="margin-top:10px;padding:8px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;width:100%;font-weight:600">📲 Notificar Acudiente por WhatsApp</button></div>`;
-    }
-  });
-  if(!hay) html='<div class="alert alert-g"><div class="a-title">✅ Sin alertas activas</div>Ninguna persona supera 3 faltas en los últimos 7 días.</div>';
-  c.innerHTML=html;
-}
+function renderAlertas(){ const c=document.getElementById('alertasContainer'),ahora=new Date();ahora.setHours(0,0,0,0);let html='',hay=false; const ps=[...appData.personas].sort((a,b)=>{ const fa=(appData.histFaltas[a.nombre]||[]).filter(d=>(ahora-new Date(d))/86400000<=7).length,fb=(appData.histFaltas[b.nombre]||[]).filter(d=>(ahora-new Date(d))/86400000<=7).length;return fb-fa;}); ps.forEach(p=>{ const fs=appData.histFaltas[p.nombre]||[],rec=fs.filter(d=>(ahora-new Date(d))/86400000<=7),total=fs.length; if(rec.length>=3){hay=true;html+=`<div class="alert alert-d"><div class="a-title">🚨 ${p.nombre}</div><div>Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}<br>${rec.length} faltas en 7 días · ${total} total</div><button onclick="enviarWA('${p.nombre}','${p.grado}','${p.tipoDoc}','${p.numDoc}',${rec.length},'coordinacion')" style="margin-top:10px;padding:8px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;width:100%;font-weight:600">📲 Notificar Coordinación</button></div>`;}else if(rec.length===2){hay=true;html+=`<div class="alert alert-w"><div class="a-title">⚠️ ${p.nombre}</div><div>Grado ${p.grado} · ${p.tipoDoc} ${p.numDoc}<br>2 faltas recientes.</div><button onclick="enviarWA('${p.nombre}','${p.grado}','${p.tipoDoc}','${p.numDoc}',${rec.length},'acudiente')" style="margin-top:10px;padding:8px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;width:100%;font-weight:600">📲 Notificar Acudiente</button></div>`;} }); if(!hay)html='<div class="alert alert-g"><div class="a-title">✅ Sin alertas activas</div></div>'; c.innerHTML=html; }
 
-function enviarWA(nombre,grado,tipoDoc,numDoc,faltas,dest){
-  const fecha=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
-  const msg=dest==='coordinacion'
-    ?`*⚠️ ALERTA DE INASISTENCIA — ${cfg.colegio.toUpperCase()}*\n\nDocente: ${cfg.docente}\nEstudiante: *${nombre}*\nGrado: ${grado}\nDocumento: ${tipoDoc} ${numDoc}\nFaltas últimos 7 días: *${faltas}*\nFecha: ${fecha}\n\nSolicito revisión por ausencias reiteradas. Requiere atención de coordinación.`
-    :`Cordial saludo.\n\nLe informo que *${nombre}* (Grado ${grado} · ${tipoDoc} ${numDoc}) presenta *${faltas} inasistencias* recientes en *${cfg.colegio}*.\n\nSolicito comunicarse con el docente *${cfg.docente}* para justificar las ausencias.\n\nGracias.`;
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-}
+function enviarWA(nombre,grado,tipoDoc,numDoc,faltas,dest){ const fecha=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),msg=dest==='coordinacion'?`*⚠️ ALERTA — ${cfg.colegio.toUpperCase()}*\n\nDocente: ${cfg.docente}\nEstudiante: *${nombre}*\nGrado: ${grado}\nDocumento: ${tipoDoc} ${numDoc}\nFaltas 7 días: *${faltas}*\nFecha: ${fecha}`:`Cordial saludo.\n\n*${nombre}* (Grado ${grado} · ${tipoDoc} ${numDoc}) presenta *${faltas} inasistencias* en *${cfg.colegio}*.\n\nDocente: ${cfg.docente}\nFecha: ${fecha}`; window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
 
 // ═══════════════════════════════════════════════════════════════
-// CONFIG
+// CONFIG — BACKUP
 // ═══════════════════════════════════════════════════════════════
-function exportarBackup(){
-  const blob=new Blob([JSON.stringify({version:5,fecha:new Date().toISOString(),cfg,appData},null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='backup_lista_facial_'+todayKey+'.json'; a.click();
-  toast('✅ Respaldo exportado');
-}
-function importarBackup(e){
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try {
-      const b=JSON.parse(ev.target.result);
-      if(!b.appData){ toast('❌ Archivo inválido'); return; }
-      if(!confirm('¿Importar? Los datos actuales serán reemplazados.')) return;
-      appData=b.appData; if(b.cfg) cfg=b.cfg;
-      save(); localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-      reconstruirMatcher(); initUI(); renderPersonas(); renderLista(); renderAlertas();
-      toast('✅ Datos importados');
-    } catch(err){ toast('❌ Error al leer el archivo'); }
-  };
-  r.readAsText(file); e.target.value='';
-}
-function borrarTodo(){
-  if(!confirm('¿Borrar TODOS los datos?')) return;
-  if(!confirm('¿Confirmas? Esta acción no se puede deshacer.')) return;
-  localStorage.removeItem(DB_KEY); localStorage.removeItem(CFG_KEY); location.reload();
-}
-function actualizarInfoStorage(){
-  try {
-    const kb=(new Blob([localStorage.getItem(DB_KEY)||'']).size/1024).toFixed(1);
-    document.getElementById('cfgStorageInfo').textContent='Datos en localStorage: '+kb+' KB';
-  } catch(e){}
-}
+function exportarBackup(){ if(!esAdmin()){toast('🔒 Solo Admin');return;} const b=new Blob([JSON.stringify({version:5,fecha:new Date().toISOString(),cfg,appData},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='backup_lista_facial_'+todayKey+'.json';a.click();toast('✅ Respaldo exportado'); }
+function importarBackup(e){ if(!esAdmin()){toast('🔒 Solo Admin');return;} const file=e.target.files[0];if(!file)return; const r=new FileReader();r.onload=ev=>{try{const b=JSON.parse(ev.target.result);if(!b.appData){toast('❌ Archivo inválido');return;}if(!confirm('¿Importar? Los datos actuales serán reemplazados.'))return;appData=b.appData;if(b.cfg)cfg=b.cfg;save();localStorage.setItem(CFG_KEY,JSON.stringify(cfg));reconstruirMatcher();initUI();renderPersonas();renderLista();renderAlertas();toast('✅ Datos importados');}catch(err){toast('❌ Error al leer el archivo');}};r.readAsText(file);e.target.value=''; }
+function borrarTodo(){ if(!esAdmin()){toast('🔒 Solo Admin');return;} if(!confirm('¿Borrar TODOS los datos?'))return;if(!confirm('¿Confirmas?'))return;localStorage.removeItem(DB_KEY);localStorage.removeItem(CFG_KEY);location.reload(); }
+function actualizarInfoStorage(){ try{const kb=(new Blob([localStorage.getItem(DB_KEY)||'']).size/1024).toFixed(1);document.getElementById('cfgStorageInfo').textContent='localStorage: '+kb+' KB';}catch(e){} }
 
 // ═══════════════════════════════════════════════════════════════
 // UI
@@ -1269,48 +1419,47 @@ function switchTab(id){
   if(id==='lista')    renderLista();
   if(id==='alertas')  renderAlertas();
   if(id==='config'){
-    actualizarInfoStorage(); actualizarInfoModeloCache();
+    actualizarInfoStorage(); actualizarInfoModeloCache(); renderPerfilesConfig();
     document.getElementById('cfgColegio').value=cfg.colegio;
     document.getElementById('cfgDocente').value=cfg.docente;
     document.getElementById('cfgHoraCorte').value=cfg.horaCorte;
     document.getElementById('cfgConfianza').value=cfg.confianza;
     document.getElementById('cfgSegConfirm').value=cfg.segConfirm;
     document.getElementById('cfgSonidos').checked=cfg.sonidos;
+    document.getElementById('cfgInactividad').value=cfg.inactividad;
   }
 }
 
 let toastT;
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500);
-}
+function toast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3500); }
 function iniciales(n){ return n.split(' ').filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join(''); }
 
-const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-function hoy(){ const d=new Date(); return DIAS[d.getDay()]+' '+d.getDate()+' de '+MESES[d.getMonth()]+' '+d.getFullYear(); }
-
-// Reloj en tiempo real en la cabecera de cámara
-function actualizarReloj(){
-  const el=document.getElementById('horaReloj');
-  if(el) el.textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-setInterval(actualizarReloj, 1000);
+const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function hoy(){ const d=new Date();return DIAS[d.getDay()]+' '+d.getDate()+' de '+MESES[d.getMonth()]+' '+d.getFullYear(); }
+function actualizarReloj(){ const el=document.getElementById('horaReloj');if(el)el.textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+setInterval(actualizarReloj,1000);
 
 function initUI(){
   document.getElementById('fechaHdr').textContent=cfg.colegio+' · '+hoy();
   renderFiltrosGrado('filtrosGrado',filtroGrado,'setFiltroGrado');
   renderFiltrosGrado('filtrosListaGrado',filtroLista,'setFiltroLista');
+  actualizarUI_Perfil();
 }
 
 // ═══════════════════════════════════════════════════════════════
 // INICIO
 // ═══════════════════════════════════════════════════════════════
 load();
-window.addEventListener('load', ()=>{
-  if(typeof faceapi!=='undefined') loadModels();
-  else document.getElementById('loadStep').textContent='❌ Error cargando librería. Verifica internet.';
+window.addEventListener('load',()=>{
+  if(!sec.configurado){
+    // Primer uso — mostrar asistente
+    document.getElementById('pinScreen').style.display='none';
+    document.getElementById('setupScreen').style.display='flex';
+  } else {
+    // Ya configurado — mostrar PIN
+    document.getElementById('pinScreen').style.display='flex';
+    iniciarPantallaPIN();
+  }
 });
 </script>
 </body>
